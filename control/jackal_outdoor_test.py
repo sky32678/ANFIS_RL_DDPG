@@ -185,7 +185,7 @@ if __name__ == "__main__":
     pathlength = len(test_path)
 
 
-    test_path.append([1000,0])
+    test_path.append([100,0])
 
     agent= torch.load('anfis_ddpg.model')
     ##########################################################3
@@ -223,7 +223,7 @@ if __name__ == "__main__":
             new_state = fuzzy_error(current_point, target_point, future_point)
         #   for ddpg model
             control_law = agent.get_action(np.array(new_state))
-            control_law = control_law.item() * 4.0
+            control_law = control_law.item() * 2.0
 
             if (control_law > 4.):
                 control_law = 4.

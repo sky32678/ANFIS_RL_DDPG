@@ -187,7 +187,7 @@ pathcount = 0
 pathlength = len(test_path)
 test_path.append([1000,1000])
 
-agent= torch.load('anfis_ddpg.model')
+agent= torch.load('anfis_initialized.model')
 ##########################################################3
 rospy.init_node('check_odometry')
 # sub = rospy.Subscriber("/odom", Odometry, callback)
@@ -200,7 +200,7 @@ timer = 0
 name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
 summary = SummaryWriter(f'/home/auvsl/catkin_woojin/online_rl/control/figures/{name}')
 dis_e = []
-for i in range(5000):
+for i in range(2000):
     robot_path = []
     dis_error = []
     control_law_save = []
@@ -223,7 +223,7 @@ for i in range(5000):
         new_state = fuzzy_error(current_point, target_point, future_point)
     #   for ddpg model
         control_law = agent.get_action(np.array(new_state))
-        control_law = control_law.item()*4.0
+        control_law = control_law.item()*2.0
 
         if (control_law > 4.):
             control_law = 4.

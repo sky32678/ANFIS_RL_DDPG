@@ -54,38 +54,38 @@ def _plot_mfs(var_name, fv, model):
 def plot_all_mfs(model):
     for i, (var_name, fv) in enumerate(model.layer.fuzzify.varmfs.items()):
         _plot_mfs(var_name, fv, model)
-
-
-
-agent = torch.load('anfis_ddpg.model')
-actor = agent.actor
-
-critic = agent.critic
-torch.save(critic.state_dict(), "citic.weights")
-import sys
-sys.exit()
-
-cose =  actor.layer['consequent'].mamdani_defs
-cose.cache()
-
-mfs_print(actor)
-generate_txt(actor)
-plot_all_mfs(actor)
-values = cose.cache_output_values
-
-fig, ax = plt.subplots()
-
-s = 1
-
-
-for key, value in values.items():
-    print(value)
-    ax.plot([value - 1 / s, value, value + 1 / s], [0,1,0], label =cose.names[key])
-
-ax.legend()
-plt.savefig("mygraph213.png")
-
-ssfsdf
+#
+#
+#
+# agent = torch.load('anfis_ddpg.model')
+# actor = agent.actor
+#
+# critic = agent.critic
+# torch.save(critic.state_dict(), "citic.weights")
+# import sys
+# sys.exit()
+#
+# cose =  actor.layer['consequent'].mamdani_defs
+# cose.cache()
+#
+# mfs_print(actor)
+# generate_txt(actor)
+# plot_all_mfs(actor)
+# values = cose.cache_output_values
+#
+# fig, ax = plt.subplots()
+#
+# s = 1
+#
+#
+# for key, value in values.items():
+#     print(value)
+#     ax.plot([value - 1 / s, value, value + 1 / s], [0,1,0], label =cose.names[key])
+#
+# ax.legend()
+# plt.savefig("mygraph213.png")
+#
+# ssfsdf
 
 anf = Anfis().my_model()
 #print(env.action_space.shape)
@@ -98,7 +98,7 @@ torch.save(agent, 'anfis_initialized.model')
 #torch.save(agent, 'actor.npy',_use_new_zipfile_serialization=False)
 #torch.save(agent, 'critic.npy',_use_new_zipfile_serialization=False)
 print(agent.curr_states)
-print(agent.critic.linear1.weight)
+# print(agent.critic.linear1.weight)
 dd
 #noise = OUNoise(env.action_space)
 

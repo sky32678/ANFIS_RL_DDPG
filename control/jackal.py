@@ -195,12 +195,13 @@ if __name__ == "__main__":
     name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
     summary = SummaryWriter(f'/home/auvsl/catkin_woojin/online_rl/control/figures/{name}')  #change this
     dis_e = []
-    for i in range(10):
+    for i in range(1):
         robot_path = []
         dis_error = []
         control_law_save = []
         stop = False
         path_count = 0
+
         while not rospy.is_shutdown():
             ###Wait untill publisher gets connected
             while not pub.get_num_connections() == 1:
@@ -209,7 +210,7 @@ if __name__ == "__main__":
             current_point, target_point, future_point = target_generator(test_path)
 
             if stop == True:
-                print("STOP")
+                print("STOP!!!")
                 os.system('rosservice call /gazebo/reset_world "{}"')
                 os.system('rosservice call /set_pose "{}"')
                 break
@@ -217,7 +218,7 @@ if __name__ == "__main__":
             new_state = fuzzy_error(current_point, target_point, future_point)
         #   for ddpg model
             control_law = agent.get_action(np.array(new_state))
-            control_law = control_law.item() * 4.0
+            control_law = control_law.item() * 2.0
 
             if (control_law > 4.):
                 control_law = 4.

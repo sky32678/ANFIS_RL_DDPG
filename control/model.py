@@ -38,7 +38,7 @@ class Anfis(nn.Module):
                                    TrapezoidalMembFunc( 1.2515, 1.947, 100, 100,5),
                                    Zero()]),
                 ('theta_far', [TrapezoidalMembFunc(-3.15, -3.15, -2.3541, -1.2865,1),
-                               TrapezoidalMembFunc( -2.3541, -1.2865, -1.0965, -0.1112,2),
+                               TrapezoidalMembFunc( -2.3541, -1.2865, -1.159, -0.1351,2),
                                TrapezoidalMembFunc(-1.159, -0.1351, 0.1351, 1.159,3),
                                TrapezoidalMembFunc( 0.1351, 1.159, 1.2878, 2.3541,4),
                                TrapezoidalMembFunc( 1.2878, 2.3541, 3.15, 3.15,5),
