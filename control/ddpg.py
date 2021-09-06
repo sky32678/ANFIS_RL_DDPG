@@ -106,7 +106,7 @@ def mfs_constraint(model):
 
 
 class DDPGagent:
-    def __init__(self, num_inputs, num_outputs, anf, hidden_size=32, actor_learning_rate=1e-3, critic_learning_rate=1e-3, gamma=0.99, tau=1e-3, max_memory_size=50000):
+    def __init__(self, num_inputs, num_outputs, anf, hidden_size=32, actor_learning_rate=1e-4, critic_learning_rate=1e-3, gamma=0.99, tau=1e-3, max_memory_size=50000):
         # Params
         self.num_states = num_inputs
         #self.num_actions = env.action_space.shape
@@ -132,7 +132,7 @@ class DDPGagent:
         self.memory = Memory(max_memory_size)
     #    self.critic_criterion  = nn.MSELoss()
         self.critic_criterion  = torch.nn.MSELoss(reduction='sum')
-        self.actor_optimizer  = optim.SGD(self.actor.parameters(), lr=1e-5, momentum=0.99)
+        self.actor_optimizer  = optim.SGD(self.actor.parameters(), lr=actor_learning_rate, momentum=0.99)
     #    self.actor_optimizer  = optim.Adam(self.actor.parameters(), lr=actor_learning_rate)
         self.critic_optimizer = optim.SGD(self.critic.parameters(), lr=critic_learning_rate, momentum=0.99)
     #    self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=critic_learning_rate)

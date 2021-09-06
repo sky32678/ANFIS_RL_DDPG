@@ -200,7 +200,7 @@ timer = 0
 name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
 summary = SummaryWriter(f'/home/auvsl/catkin_woojin/online_rl/control/figures/{name}')
 dis_e = []
-for i in range(2000):
+for i in range(250):
     robot_path = []
     dis_error = []
     control_law_save = []
@@ -217,7 +217,9 @@ for i in range(2000):
         if stop == True:
             print("STOP")
             os.system('rosservice call /gazebo/reset_world "{}"')
+            rospy.sleep(1)
             os.system('rosservice call /set_pose "{}"')
+            rospy.sleep(1)
             break
 
         new_state = fuzzy_error(current_point, target_point, future_point)
