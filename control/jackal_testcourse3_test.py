@@ -91,8 +91,8 @@ def fuzzy_error(curr, tar, future):
         side = 0
 
     distanceLine= np.linalg.norm(np.array([x,y])-proj.T,2)*side                     ##########################check this
-    # if 0 <= x and x < 16.0 and -2.8 <= y and y <= 0.01:
-    dis_error.append(distanceLine)
+    if 0 <= x and x < 16.0 and -2.8 <= y and y <= 0.01:
+        dis_error.append(distanceLine)
 
     farTarget = np.array( [0.9*proj[0] + 0.1*tar[0], 0.9*proj[1] + 0.1*tar[1]] )
     th1 = math.atan2(farTarget[1]-y, farTarget[0]-x)
@@ -216,7 +216,6 @@ if __name__ == "__main__":
 
                 test_path = test_course3()
                 test_path.append([100,0])
-                rospy.sleep(15)
                 #os.system('rosservice call /gazebo/reset_world "{}"')
                 #os.system('rosservice call /set_pose "{}"')
                 break
@@ -237,8 +236,8 @@ if __name__ == "__main__":
             twist_msg.angular.z = control_law
 
             if timer % 50 == 0:
-            #    if 0 <= x and x < 16.0 and -2.8 <= y and y <= 0.01:
-                agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0])
+                if 0 <= x and x < 16.0 and -2.8 <= y and y <= 0.01:
+                    agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0])
                 timer = 0
 
             pub.publish(twist_msg)

@@ -196,7 +196,7 @@ if __name__ == "__main__":
     timer = 0
 
     name = f'Gazebo Outdoor test {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
-    summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')  #change this
+    summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
     dis_e = []
 
     robot_path = []

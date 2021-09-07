@@ -13,7 +13,7 @@ import anfis
 import os
 import datetime
 from utils.utils import reward, angdiff, wraptopi
-from utils.path import test_course, test_course2
+from utils.path import test_course, test_course2, test_course3
 from torch.utils.tensorboard import SummaryWriter
 
 matplotlib.use('Agg')
@@ -182,7 +182,7 @@ def agent_update(new_state, linear_velocity, control_law, agent, done, batch_siz
 
 
 
-test_path = test_course()      ####testcoruse MUST start with 0,0 . Check this out
+test_path = test_course3()      ####testcoruse MUST start with 0,0 . Check this out
 pathcount = 0
 pathlength = len(test_path)
 test_path.append([1000,1000])
@@ -198,7 +198,7 @@ timer = 0
 ######################################################3
 # rospy.Timer(rospy.Duration(0.075), agent_update)
 name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
-summary = SummaryWriter(f'/home/auvsl/catkin_woojin/online_rl/control/figures/{name}')
+summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
 dis_e = []
 for i in range(250):
     robot_path = []
@@ -275,6 +275,7 @@ for i in range(250):
 
     plot_all_mfs(agent.actor, summary, i)
     plot_mamdani(agent.actor, summary, i)
+    torch.save(agent,'models/anfis_ddpg_trained{}.model'.format(i+1))
 
 
 torch.save(agent,'anfis_ddpg_trained.model')
