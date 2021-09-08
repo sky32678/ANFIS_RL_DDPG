@@ -273,6 +273,27 @@ for i in range(250):
 
     summary.add_figure("Gazebo/Control_law", fig, i+1)
 
+    summary.add_scalar("Distance_line/mf0/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf0'].c, i+1)
+    summary.add_scalar("Distance_line/mf0/d",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf0'].d, i+1)
+    summary.add_scalar("Distance_line/mf1/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf1'].c, i+1)
+    summary.add_scalar("Distance_line/mf1/d",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf1'].d, i+1)
+    summary.add_scalar("Distance_line/mf2/b",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf2'].b, i+1)
+    summary.add_scalar("Distance_line/mf2/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf2'].c, i+1)
+
+    summary.add_scalar("theta_far/mf0/c",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf0'].c, i+1)
+    summary.add_scalar("theta_far/mf0/d",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf0'].d, i+1)
+    summary.add_scalar("theta_far/mf1/c",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf1'].c, i+1)
+    summary.add_scalar("theta_far/mf1/d",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf1'].d, i+1)
+    summary.add_scalar("theta_far/mf2/b",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf2'].b, i+1)
+    summary.add_scalar("theta_far/mf2/c",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf2'].c, i+1)
+
+    summary.add_scalar("theta_near/mf0/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf0'].c, i+1)
+    summary.add_scalar("theta_near/mf0/d",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf0'].d, i+1)
+    summary.add_scalar("theta_near/mf1/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf1'].c, i+1)
+    summary.add_scalar("theta_near/mf1/d",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf1'].d, i+1)
+    summary.add_scalar("theta_near/mf2/b",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf2'].b, i+1)
+    summary.add_scalar("theta_near/mf2/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf2'].c, i+1)
+
     plot_all_mfs(agent.actor, summary, i)
     plot_mamdani(agent.actor, summary, i)
     torch.save(agent,'models/anfis_ddpg_trained{}.model'.format(i+1))
