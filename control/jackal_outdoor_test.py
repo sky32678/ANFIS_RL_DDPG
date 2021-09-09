@@ -168,13 +168,13 @@ def callback(msg):
     # print('x position: ',x)
     # print('y position: ',y)
 
-def agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, dis_error):
+def agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, curr_dis_error):
     rewards = reward(new_state, linear_velocity, control_law)
     state = agent.curr_states
     new_state = np.array(new_state)
     agent.curr_states = new_state
     agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
-    if len(agent.memory) > batch_size and dis_error > 0.10:
+    if len(agent.memory) > batch_size and abs(curr_dis_error) > 0.10:
         agent.update(batch_size)
 
 
