@@ -9,12 +9,14 @@ import matplotlib.pyplot as plt
 from numpy.linalg import inv
 import math
 import torch
-import anfis
+import anfis_codes.anfis
 import os
 import datetime
 from utils.utils import reward, angdiff, wraptopi
 from utils.path import test_course, test_course2, test_course3
 from torch.utils.tensorboard import SummaryWriter
+from plot_functions.plots import plot_mamdani, _plot_mfs, plot_all_mfs
+from plot_functions.tensorboard_plots import tensorboard_plot
 
 matplotlib.use('Agg')
 dtype = torch.float
@@ -37,43 +39,6 @@ done = False
 robot_path = []
 dis_error = []
 
-def plot_mamdani(actor,summary, epoch):
-    cose =  actor.layer['consequent'].mamdani_defs
-    cose.cache()
-
-    values = cose.cache_output_values
-
-    fig, ax = plt.subplots()
-    s = 1
-
-    for key, value in values.items():
-        ax.plot([value - 1 / s, value, value + 1 / s], [0,1,0], label =cose.names[key])
-    summary.add_figure("Consequent_Membership/Mamdani_output", fig, epoch+1)
-
-def _plot_mfs(var_name, fv, model, summary,epoch):
-    '''
-        A simple utility function to plot the MFs for a variable.
-        Supply the variable name, MFs and a set of x values to plot.
-    '''
-
-    zero_length = (model.number_of_mfs[model.input_keywords[0]])
-    x = torch.zeros(10000)
-    y = -5
-
-    fig, ax = plt.subplots()
-
-    for i in range(10000):
-        x[i] = torch.tensor(y)
-        y += 0.001
-    for mfname, yvals in fv.fuzzify(x):
-        temp = 'mf{}'.format(zero_length)
-        if (mfname == temp) is False:
-            ax.plot(x, yvals.tolist(), label=mfname)
-    summary.add_figure('Antecedent_Membership/{}'.format(var_name), fig, epoch+1)
-
-def plot_all_mfs(model,summary,epoch):
-    for i, (var_name, fv) in enumerate(model.layer.fuzzify.varmfs.items()):
-        _plot_mfs(var_name, fv, model, summary,epoch)
 
 def fuzzy_error(curr, tar, future):
     global dis_error
@@ -245,144 +210,133 @@ def inverse_transform_poses(robot_path):
 
     return poses
 
-test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
-for i in range(len(test_path)):
-    test_path[i][0] = test_path[i][0] / 1.25
-    test_path[i][1] = test_path[i][1] / 1.25
-    
-pathcount = 0
-pathlength = len(test_path)
-test_path.append([1000,1000])
 
-agent= torch.load('anfis_initialized.model')
-##########################################################3
-rospy.init_node('check_odometry')
-# sub = rospy.Subscriber("/odom", Odometry, callback)
-sub = rospy.Subscriber("/odometry/filtered", Odometry, callback)
-pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
-timer = 0
-# rate = rospy.Rate(100)
-######################################################3
-# rospy.Timer(rospy.Duration(0.075), agent_update)
-name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
-summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
-dis_e = []
-for i in range(50):
-    robot_path = []
-    dis_error = []
-    control_law_save = []
-    stop = False
-    path_count = 0
-    path_transform()
-    while not rospy.is_shutdown():
-        ###Wait untill publisher gets connected
-        while not pub.get_num_connections() == 1:
-            # print(pub.get_num_connections())
-            pass
+###############################################33
 
-        current_point, target_point, future_point = target_generator(test_path)
+if __name__ == "__main__":
+    test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
+    for i in range(len(test_path)):
+        test_path[i][0] = test_path[i][0] / 1.25
+        test_path[i][1] = test_path[i][1] / 1.25
 
-        if stop == True:
-            print("STOP")
+    pathcount = 0
+    pathlength = len(test_path)
+    test_path.append([1000,1000])
 
-            test_path = test_course3()
-            test_path.append([100,0])
-            break
+    agent= torch.load('anfis_initialized.model')
+    ##########################################################3
+    rospy.init_node('check_odometry')
+    # sub = rospy.Subscriber("/odom", Odometry, callback)
+    sub = rospy.Subscriber("/odometry/filtered", Odometry, callback)
+    pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
+    timer = 0
+    # rate = rospy.Rate(100)
+    ######################################################3
+    # rospy.Timer(rospy.Duration(0.075), agent_update)
+    name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
+    summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
+    dis_e = []
+    for i in range(50):
+        robot_path = []
+        dis_error = []
+        control_law_save = []
+        stop = False
+        path_count = 0
+        path_transform()
+        while not rospy.is_shutdown():
+            ###Wait untill publisher gets connected
+            while not pub.get_num_connections() == 1:
+                # print(pub.get_num_connections())
+                pass
 
-        new_state = fuzzy_error(current_point, target_point, future_point)
-    #   for ddpg model
-        control_law = agent.get_action(np.array(new_state))
-        control_law = control_law.item()*2.0
+            current_point, target_point, future_point = target_generator(test_path)
 
-        if (control_law > 4.):
-            control_law = 4.
-        if (control_law < -4.):
-            control_law = -4.
+            if stop == True:
+                print("STOP")
 
-        # print(control_law)
-        twist_msg = Twist()
-        twist_msg.linear.x = linear_velocity
-        twist_msg.angular.z = control_law
+                break
 
-        if timer % 50 == 0:
-            agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0])
-            timer = 0
+            new_state = fuzzy_error(current_point, target_point, future_point)
+        #   for ddpg model
+            control_law = agent.get_action(np.array(new_state))
+            control_law = control_law.item()*2.0
 
-        pub.publish(twist_msg)
-        rospy.sleep(0.001)
-        timer += 1
-        control_law_save.append(control_law)
+            if (control_law > 4.):
+                control_law = 4.
+            if (control_law < -4.):
+                control_law = -4.
 
-    print("Epoch", i+1)
+            # print(control_law)
+            twist_msg = Twist()
+            twist_msg.linear.x = linear_velocity
+            twist_msg.angular.z = control_law
 
-    mae = np.mean(np.abs(dis_error))
-    print("MAE", mae)
+            if timer % 50 == 0:
+                agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0])
+                timer = 0
 
-    rmse = np.sqrt(np.mean(np.power(dis_error, 2)))
-    print("RMSE", rmse)
+            pub.publish(twist_msg)
+            rospy.sleep(0.001)
+            timer += 1
+            control_law_save.append(control_law)
 
-    summary.add_scalar("Error/Dist Error MAE", mae, i+1)
-    summary.add_scalar("Error/Dist Error RMSE", rmse, i+1)
+        print("Epoch", i+1)
 
-    dis_e.append(mae)
+        mae = np.mean(np.abs(dis_error))
+        print("MAE", mae)
 
-    test_path = np.array(test_path)
-    robot_path = np.array(inverse_transform_poses(robot_path))
+        rmse = np.sqrt(np.mean(np.power(dis_error, 2)))
+        print("RMSE", rmse)
 
-    fig, ax = plt.subplots()
-    ax.plot(test_path[:-1, 0], test_path[:-1, 1])
-    ax.plot(robot_path[:, 0], robot_path[:, 1])
-    ax.set_aspect('equal')
-    summary.add_figure("Gazebo/Plot", fig, i+1)
+        summary.add_scalar("Error/Dist Error MAE", mae, i+1)
+        summary.add_scalar("Error/Dist Error RMSE", rmse, i+1)
 
-    fig, ax = plt.subplots()
-    ax.plot(np.array(list(range(1,len(control_law_save)+1))), np.array(control_law_save))
+        dis_e.append(mae)
 
-    summary.add_figure("Gazebo/Control_law", fig, i+1)
+        test_path = np.array(test_path)
+        robot_path = np.array(inverse_transform_poses(robot_path))
 
-    summary.add_scalar("Distance_line/mf0/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf0'].c, i+1)
-    summary.add_scalar("Distance_line/mf0/d",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf0'].d, i+1)
-    summary.add_scalar("Distance_line/mf1/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf1'].c, i+1)
-    summary.add_scalar("Distance_line/mf1/d",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf1'].d, i+1)
-    summary.add_scalar("Distance_line/mf2/b",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf2'].b, i+1)
-    summary.add_scalar("Distance_line/mf2/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf2'].c, i+1)
+        fig, ax = plt.subplots()
+        ax.plot(test_path[:-1, 0], test_path[:-1, 1])
+        ax.plot(robot_path[:, 0], robot_path[:, 1])
+        ax.set_aspect('equal')
+        summary.add_figure("Gazebo/Plot", fig, i+1)
 
-    summary.add_scalar("theta_far/mf0/c",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf0'].c, i+1)
-    summary.add_scalar("theta_far/mf0/d",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf0'].d, i+1)
-    summary.add_scalar("theta_far/mf1/c",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf1'].c, i+1)
-    summary.add_scalar("theta_far/mf1/d",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf1'].d, i+1)
-    summary.add_scalar("theta_far/mf2/b",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf2'].b, i+1)
-    summary.add_scalar("theta_far/mf2/c",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf2'].c, i+1)
+        fig, ax = plt.subplots()
+        ax.plot(np.array(list(range(1,len(control_law_save)+1))), np.array(control_law_save))
 
-    summary.add_scalar("theta_near/mf0/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf0'].c, i+1)
-    summary.add_scalar("theta_near/mf0/d",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf0'].d, i+1)
-    summary.add_scalar("theta_near/mf1/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf1'].c, i+1)
-    summary.add_scalar("theta_near/mf1/d",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf1'].d, i+1)
-    summary.add_scalar("theta_near/mf2/b",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf2'].b, i+1)
-    summary.add_scalar("theta_near/mf2/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf2'].c, i+1)
+        summary.add_figure("Gazebo/Control_law", fig, i+1)
 
-    plot_all_mfs(agent.actor, summary, i)
-    plot_mamdani(agent.actor, summary, i)
+        tensorboard_plot(agent,i,summary)
 
-    critic = agent.critic
-    l1 = critic.linear1
-    l2 = critic.linear2
-    l3 = critic.linear3
+        plot_all_mfs(agent.actor, summary, i)
+        plot_mamdani(agent.actor, summary, i)
 
-    for name, layer in zip(['l1', 'l2', 'l3'], [l1, l2, l3]):
-        summary.add_histogram(f"{name}/bias", layer.bias, global_step=i+1)
-        summary.add_histogram(f"{name}/weight", layer.weight, global_step=i+1)
+        critic = agent.critic
+        l1 = critic.linear1
+        l2 = critic.linear2
+        l3 = critic.linear3
 
-    torch.save(agent,'models/anfis_ddpg_trained{}.model'.format(i+1))
+        for name, layer in zip(['l1', 'l2', 'l3'], [l1, l2, l3]):
+            summary.add_histogram(f"{name}/bias", layer.bias, global_step=i+1)
+            summary.add_histogram(f"{name}/weight", layer.weight, global_step=i+1)
+
+        torch.save(agent,'models/anfis_ddpg_trained{}.model'.format(i+1))
+
+        test_path = test_course3()
+        for i in range(len(test_path)):
+            test_path[i][0] = test_path[i][0] / 1.25
+            test_path[i][1] = test_path[i][1] / 1.25
+        test_path.append([100,0])
 
 
-torch.save(agent,'anfis_ddpg_trained.model')
-####plot
+    torch.save(agent,'anfis_ddpg_trained.model')
+    ####plot
 
-# plt.plot(test_path[:-1,0], test_path[:-1,1])
-# plt.plot(robot_path[:,0], robot_path[:,1])
-# plt.savefig("figures/mygraph.png")
+    # plt.plot(test_path[:-1,0], test_path[:-1,1])
+    # plt.plot(robot_path[:,0], robot_path[:,1])
+    # plt.savefig("figures/mygraph.png")
 
-###distance error mean
-# print(np.mean(np.abs(dis_error)))
-print(dis_e)
+    ###distance error mean
+    # print(np.mean(np.abs(dis_error)))
+    print(dis_e)

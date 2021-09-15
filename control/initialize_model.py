@@ -2,10 +2,10 @@ import sys
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-import anfis
-from ddpg import DDPGagent
-from memory import *
-from model import *
+import anfis_codes.anfis
+from rl.ddpg import DDPGagent
+from rl.memory import *
+from anfis_codes.model import *
 def generate_txt(model):
     # coeffs = (model.layer['consequent']._coeff).tolist()    ##print final coeffs in cnsequent layer.
     # with open("coeffs.txt", 'w') as output:
