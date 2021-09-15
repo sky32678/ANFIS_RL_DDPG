@@ -265,7 +265,7 @@ if __name__ == "__main__":
         fig, ax = plt.subplots()
         ax.plot(test_path[:-1, 0], test_path[:-1, 1])
         ax.plot(robot_path[:, 0], robot_path[:, 1])
-
+        ax.set_aspect('equal')
         summary.add_figure("Gazebo/Plot", fig, i+1)
 
         fig, ax = plt.subplots()

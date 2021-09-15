@@ -155,8 +155,12 @@ class AntecedentLayer(torch.nn.Module):
         mf_indices = [(0,0,5),(0,1,5),(0,2,5),(0,3,5),(0,4,5),
                       (1,5,0),(1,5,1),(1,5,2),(1,5,3),(1,5,4),
                       (2,5,0),(2,5,1),(2,5,2),(2,5,3),(2,5,4),
-                      (3,5,0),(3,5,1),(3,5,2),(3,5,3),(0,5,4),
+                      (3,5,0),(3,5,1),(3,5,2),(3,5,3),(3,5,4),
                       (4,0,5),(4,1,5),(4,2,5),(4,3,5),(4,4,5),]
+
+        mf_names = ['far left', 'near left', 'zero', 'near right', 'far right', 'zero']
+        m_name = ['distance', 'near', 'far']
+        o_names = ['far left', 'left', 'near left', 'zero', 'close right', 'right', 'hard right']
     #    self.mf_indices = torch.tensor((mf_indices))
 
         ########popping one rule base
@@ -169,11 +173,56 @@ class AntecedentLayer(torch.nn.Module):
         # 3 = 'near_right'
         # 4 = 'far_right'
         # 5 = 'none'
-        mf_out = [-3,-2,0,2,3,
-                  -3,-2,-1,0,1,
-                  -2,-1,0,1,2,
-                  -1,0,1,2,3,
-                  3,2,0,-2,-3]
+        # mf_out = [-3,-2,0,2,3,
+        #           -3,-2,-1,0,1,
+        #           -2,-1,0,1,2,
+        #           -1,0,1,2,3,
+        #           3,2,0,-2,-3]
+        mf_out = [
+                (6,),  # 1
+                (5,),  # 2
+                (3,),  # 3
+                (1,),  # 4
+                (0,),  # 5
+                (6,),  # 6
+                (5,),  # 7
+                (4,),  # 8
+                (3,),  # 9
+                (2,),  # 10
+                (5,),  # 11
+                (4,),  # 12
+                (3,),  # 13
+                (2,),  # 14
+                (1,),  # 15
+                (4,),  # 16
+                (3,),  # 17
+                (2,),  # 18
+                (1,),  # 19
+                (0,),  # 20
+                (0,),  # 21
+                (1,),  # 22
+                (3,),  # 23
+                (5,),  # 24
+                (6,),  # 25
+            ]
+        rules = []
+
+        for ind, ou in zip(mf_indices, mf_out):
+            rule = []
+            # ou += 3
+
+            for i, v in enumerate(ind):
+                if v != 5:
+                    rule.append(f'{m_name[i]} is {mf_names[v]}')
+
+            rule = ' AND '.join(rule)
+
+            rule += f" THEN {o_names[ou[0]]}"
+            rules.append(rule)
+
+        print('\n'.join(rules))
+        # import sys
+        # sys.exit()
         # outputs_membership = [
         #         (6,),  # 1
         #         (5,),  # 2

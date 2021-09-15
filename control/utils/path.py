@@ -1,4 +1,15 @@
-
+def test_course1():
+    path = [
+    [5,0],
+    [5,-5],
+    [10,-5],
+    [10,5],
+    [15,5],
+    [15,0],
+    [20,0],
+    [0,0]
+    ]
+    return path
 def test_course2():
     path = [
     [     0 ,        0],

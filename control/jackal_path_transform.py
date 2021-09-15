@@ -109,12 +109,19 @@ def target_generator(path):
     global path_count
     global stop
     global path_length
+    global t_M
     path_length = len(path) - 1
     pos_x = x
     pos_y = y
 
     current_point = np.array( path[path_count] )
     target = np.array( path[path_count + 1] )
+
+    current_point = t_M @ np.append(current_point, 1)
+    target = t_M @ np.append(target, 1)
+
+    current_point = current_point[:-1]
+    target = target[:-1]
 
     A = np.array([ [(current_point[1]-target[1]),(target[0]-current_point[0])], [(target[0]-current_point[0]), (target[1]-current_point[1])] ])
     b = np.array([ [(target[0]*current_point[1] - current_point[0]*target[1])], [(pos_x*(target[0]-current_point[0]) + pos_y*(target[1] - current_point[1]))] ])
@@ -141,6 +148,16 @@ def target_generator(path):
         tar = np.array(path[path_count+1])
         future = np.array(path[path_count+2])
 
+    # if self.transform is not None:
+    curr = t_M @ np.append(curr, 1)
+    tar = t_M @ np.append(tar, 1)
+    future = t_M @ np.append(future, 1)
+
+    curr = curr[:-1]
+    tar = tar[:-1]
+    future = future[:-1]
+
+
     return curr, tar, future
 
 def callback(msg):
@@ -154,6 +171,7 @@ def callback(msg):
     global robot_path
     global stop
     global done
+    global currentAngle
     x = msg.pose.pose.position.x
     y = msg.pose.pose.position.y
     q2 = msg.pose.pose.orientation.x
@@ -179,13 +197,59 @@ def agent_update(new_state, linear_velocity, control_law, agent, done, batch_siz
 
 
 
+def path_transform():
+    global x,y
+    global currentAngle
+    global t_M
+    global in_M
+    pose = (x,y)
+    theta = currentAngle
+    print(pose, theta)
 
+
+    T = np.array([
+        [1, 0, pose[0]],
+        [0, 1, pose[1]],
+        [0, 0, 1],
+    ])
+
+    R = np.array([
+        [np.cos(theta), -np.sin(theta), 0],
+        [np.sin(theta), np.cos(theta), 0],
+        [0, 0, 1],
+    ])
+
+    t_M = T @ R
+
+    T = np.array([
+        [1, 0, -pose[0]],
+        [0, 1, -pose[1]],
+        [0, 0, 1],
+    ])
+
+    R = np.array([
+        [np.cos(-theta), -np.sin(-theta), 0],
+        [np.sin(-theta), np.cos(-theta), 0],
+        [0, 0, 1],
+    ])
+
+    in_M = R @ T
+    #return transform, inverse_transform
+
+def inverse_transform_poses(robot_path):
+    poses = []
+
+    for p in robot_path:
+        p = np.array([*p, 1])
+        poses.append(in_M @ p)
+
+    return poses
 
 test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
 for i in range(len(test_path)):
     test_path[i][0] = test_path[i][0] / 1.25
     test_path[i][1] = test_path[i][1] / 1.25
-
+    
 pathcount = 0
 pathlength = len(test_path)
 test_path.append([1000,1000])
@@ -203,12 +267,13 @@ timer = 0
 name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
 summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
 dis_e = []
-for i in range(250):
+for i in range(50):
     robot_path = []
     dis_error = []
     control_law_save = []
     stop = False
     path_count = 0
+    path_transform()
     while not rospy.is_shutdown():
         ###Wait untill publisher gets connected
         while not pub.get_num_connections() == 1:
@@ -219,10 +284,9 @@ for i in range(250):
 
         if stop == True:
             print("STOP")
-            os.system('rosservice call /gazebo/reset_world "{}"')
-            rospy.sleep(1)
-            os.system('rosservice call /set_pose "{}"')
-            rospy.sleep(1)
+
+            test_path = test_course3()
+            test_path.append([100,0])
             break
 
         new_state = fuzzy_error(current_point, target_point, future_point)
@@ -263,7 +327,7 @@ for i in range(250):
     dis_e.append(mae)
 
     test_path = np.array(test_path)
-    robot_path = np.array(robot_path)
+    robot_path = np.array(inverse_transform_poses(robot_path))
 
     fig, ax = plt.subplots()
     ax.plot(test_path[:-1, 0], test_path[:-1, 1])
