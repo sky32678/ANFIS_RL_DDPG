@@ -38,6 +38,7 @@ done = False
 
 robot_path = []
 dis_error = []
+firstPoseTrigger = False
 
 
 def fuzzy_error(curr, tar, future):
@@ -137,6 +138,8 @@ def callback(msg):
     global stop
     global done
     global currentAngle
+    global firstPoseTrigger
+    firstPoseTrigger = True
     x = msg.pose.pose.position.x
     y = msg.pose.pose.position.y
     q2 = msg.pose.pose.orientation.x
@@ -236,6 +239,17 @@ if __name__ == "__main__":
     name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
     summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
     dis_e = []
+
+    print("Waiting for initial pose")
+    counter = 0
+    while not firstPoseTrigger:
+        counter += 1
+
+        if counter % 100 == 0:
+            print("Waiting for robot initial pose")
+        rospy.sleep(1/60.)
+    print("found initial pose", (x, y), currentAngle)
+
     for i in range(50):
         robot_path = []
         dis_error = []

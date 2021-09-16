@@ -209,7 +209,7 @@ if __name__ == "__main__":
             twist_msg.linear.x = linear_velocity
             twist_msg.angular.z = control_law
 
-            if timer % 50 == 0:
+            if timer % 75 == 0:
                 agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0])
                 timer = 0
 
