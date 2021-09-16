@@ -160,7 +160,7 @@ def agent_update(new_state, linear_velocity, control_law, agent, done, batch_siz
     new_state = np.array(new_state)
     agent.curr_states = new_state
     agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
-    if len(agent.memory) > batch_size and abs(curr_dis_error) > 0.10:
+    if len(agent.memory) > batch_size and abs(curr_dis_error) > 0.125:
         agent.update(batch_size)
 
 
@@ -213,50 +213,60 @@ def inverse_transform_poses(robot_path):
 
     return poses
 
-
-###############################################33
-
-if __name__ == "__main__":
-    test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
-    for i in range(len(test_path)):
-        test_path[i][0] = test_path[i][0] / 1.25
-        test_path[i][1] = test_path[i][1] / 1.25
-
-    pathcount = 0
-    pathlength = len(test_path)
-    test_path.append([1000,1000])
-
-    agent= torch.load('anfis_initialized.model')
-    ##########################################################3
-    rospy.init_node('check_odometry')
-    # sub = rospy.Subscriber("/odom", Odometry, callback)
-    sub = rospy.Subscriber("/odometry/filtered", Odometry, callback)
-    pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
-    timer = 0
-    # rate = rospy.Rate(100)
-    ######################################################3
-    # rospy.Timer(rospy.Duration(0.075), agent_update)
-    name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
-    summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
-    dis_e = []
-
+def wait_pose():
     print("Waiting for initial pose")
     counter = 0
     while not firstPoseTrigger:
         counter += 1
-
         if counter % 100 == 0:
             print("Waiting for robot initial pose")
         rospy.sleep(1/60.)
     print("found initial pose", (x, y), currentAngle)
 
-    for i in range(200):
+
+###############################################33
+
+if __name__ == "__main__":
+    epoch = 500
+    vel_gain = 2.0
+    path_tranform_enable = True
+
+    test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
+    for i in range(len(test_path)):
+        test_path[i][0] = test_path[i][0] / 1.25
+        test_path[i][1] = test_path[i][1] / 1.25
+
+    pathlength = len(test_path)
+    test_path.append([100,0])
+
+
+    agent= torch.load('anfis_initialized.model')
+    rospy.init_node('check_odometry')
+    # sub = rospy.Subscriber("/odom", Odometry, callback)
+    sub = rospy.Subscriber("/odometry/filtered", Odometry, callback)
+    pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
+    timer = 0
+
+    name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
+
+    #For Desktop
+    summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
+    #For jackal
+    # summary = SummaryWriter(f'/home/nvidia/catkin_ws/src/woojin/jackal/control/figures/{name}')
+
+    wait_pose()
+
+    dis_e = []
+    for i in range(epoch):
         robot_path = []
         dis_error = []
         control_law_save = []
         stop = False
         path_count = 0
-        path_transform()
+
+        if path_tranform_enable:
+            path_transform()
+
         while not rospy.is_shutdown():
             ###Wait untill publisher gets connected
             while not pub.get_num_connections() == 1:
@@ -267,20 +277,18 @@ if __name__ == "__main__":
 
             if stop == True:
                 print("STOP")
-
                 break
 
             new_state = fuzzy_error(current_point, target_point, future_point)
-        #   for ddpg model
+
             control_law = agent.get_action(np.array(new_state))
-            control_law = control_law.item()*2.0
+            control_law = control_law.item()*vel_gain
 
             if (control_law > 4.):
                 control_law = 4.
             if (control_law < -4.):
                 control_law = -4.
 
-            # print(control_law)
             twist_msg = Twist()
             twist_msg.linear.x = linear_velocity
             twist_msg.angular.z = control_law
@@ -302,43 +310,14 @@ if __name__ == "__main__":
         rmse = np.sqrt(np.mean(np.power(dis_error, 2)))
         print("RMSE", rmse)
 
-        summary.add_scalar("Error/Dist Error MAE", mae, i+1)
-        summary.add_scalar("Error/Dist Error RMSE", rmse, i+1)
-
         dis_e.append(mae)
 
         test_path = np.array(test_path)
         robot_path = np.array(inverse_transform_poses(robot_path))
 
-        fig, ax = plt.subplots()
-        ax.plot(test_path[:-1, 0], test_path[:-1, 1])
-        ax.plot(robot_path[:, 0], robot_path[:, 1])
-        ax.set_aspect('equal')
-        summary.add_figure("Gazebo/Plot", fig, i+1)
-
-        fig, ax = plt.subplots()
-        ax.plot(np.array(list(range(1,len(control_law_save)+1))), np.array(control_law_save))
-
-        summary.add_figure("Gazebo/Control_law", fig, i+1)
-
-        fig, ax = plt.subplots()
-        ax.plot(np.array(list(range(1,len(dis_error)+1))), np.array(dis_error))
-
-        summary.add_figure("Gazebo/dis_errors", fig, i+1)
-
-        tensorboard_plot(agent,i,summary)
-
+        tensorboard_plot(agent, i, summary, test_path, robot_path, control_law_save, dis_error, mae, rmse)
         plot_all_mfs(agent.actor, summary, i)
         plot_mamdani(agent.actor, summary, i)
-
-        critic = agent.critic
-        l1 = critic.linear1
-        l2 = critic.linear2
-        l3 = critic.linear3
-
-        for name, layer in zip(['l1', 'l2', 'l3'], [l1, l2, l3]):
-            summary.add_histogram(f"{name}/bias", layer.bias, global_step=i+1)
-            summary.add_histogram(f"{name}/weight", layer.weight, global_step=i+1)
 
         torch.save(agent,'models/anfis_ddpg_trained{}.model'.format(i+1))
 
@@ -347,15 +326,9 @@ if __name__ == "__main__":
             test_path[i][0] = test_path[i][0] / 1.25
             test_path[i][1] = test_path[i][1] / 1.25
         test_path.append([100,0])
-
-
-    torch.save(agent,'anfis_ddpg_trained.model')
+    # torch.save(agent,'anfis_ddpg_trained.model')
     ####plot
-
     # plt.plot(test_path[:-1,0], test_path[:-1,1])
     # plt.plot(robot_path[:,0], robot_path[:,1])
     # plt.savefig("figures/mygraph.png")
-
-    ###distance error mean
-    # print(np.mean(np.abs(dis_error)))
     print(dis_e)
