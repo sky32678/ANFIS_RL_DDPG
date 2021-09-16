@@ -321,6 +321,11 @@ if __name__ == "__main__":
 
         summary.add_figure("Gazebo/Control_law", fig, i+1)
 
+        fig, ax = plt.subplots()
+        ax.plot(np.array(list(range(1,len(dis_error)+1))), np.array(dis_error))
+
+        summary.add_figure("Gazebo/dis_errors", fig, i+1)
+
         tensorboard_plot(agent,i,summary)
 
         plot_all_mfs(agent.actor, summary, i)
