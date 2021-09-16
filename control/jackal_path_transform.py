@@ -250,7 +250,7 @@ if __name__ == "__main__":
         rospy.sleep(1/60.)
     print("found initial pose", (x, y), currentAngle)
 
-    for i in range(50):
+    for i in range(200):
         robot_path = []
         dis_error = []
         control_law_save = []
