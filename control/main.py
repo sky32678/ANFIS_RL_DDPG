@@ -21,7 +21,6 @@ from plot_functions.tensorboard_plots import tensorboard_plot
 matplotlib.use('Agg')
 dtype = torch.float
 
-linear_velocity = 1.5
 x = 0.0
 y = 0.0
 q1 = 0.0
@@ -33,9 +32,7 @@ control_law = 0.0
 
 stop = False
 path_count = 0
-batch_size = 128
 done = False
-
 robot_path = []
 dis_error = []
 firstPoseTrigger = False
@@ -230,6 +227,8 @@ if __name__ == "__main__":
     epoch = 500
     vel_gain = 2.0
     path_tranform_enable = True
+    batch_size = 128
+    linear_velocity = 1.5
 
     test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
     for i in range(len(test_path)):
