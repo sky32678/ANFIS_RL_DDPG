@@ -37,13 +37,13 @@ def averaging(model,input):
     left = -avg
     right = avg
     with torch.no_grad():
-        if input == 'distance_line':
-            if left > -0.125:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].a.copy_(torch.tensor(-0.125,dtype=torch.float))
+        if input == 'theta_lookahead':
+            if left > -0.5:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].a.copy_(torch.tensor(-0.5,dtype=torch.float))
             else:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].a.copy_(torch.tensor(left,dtype=torch.float))
-            if right < 0.125:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].d.copy_(torch.tensor(0.125,dtype=torch.float))
+            if right < 0.5:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].d.copy_(torch.tensor(0.5,dtype=torch.float))
             else:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].d.copy_(torch.tensor(right,dtype=torch.float))
         elif input == 'theta_near':
@@ -66,13 +66,13 @@ def averaging(model,input):
     left = -avg
     right = avg
     with torch.no_grad():
-        if input == 'distance_line':
-            if left > -0.05:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(-0.05,dtype=torch.float))
+        if input == 'theta_lookahead':
+            if left > -0.025:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(-0.025,dtype=torch.float))
             else:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(left,dtype=torch.float))
-            if right < 0.05:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(0.05,dtype=torch.float))
+            if right < 0.025:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(0.025,dtype=torch.float))
             else:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(right,dtype=torch.float))
         elif input == 'theta_near':
