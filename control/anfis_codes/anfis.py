@@ -152,15 +152,38 @@ class AntecedentLayer(torch.nn.Module):
     #    mf_indices = sample(mf_indices, 35)
     #    mf_indices[0] = (0,0,0,0,3)
     #    print(mf_indices)
+        # 0 = 'far_left'
+        # 1 = 'near_left'
+        # 2 = 'zero'
+        # 3 = 'near_right'
+        # 4 = 'far_right'
+        # 5 = 'none'
         mf_indices = [(0,0,5),(0,1,5),(0,2,5),(0,3,5),(0,4,5),
                       (1,5,0),(1,5,1),(1,5,2),(1,5,3),(1,5,4),
                       (2,5,0),(2,5,1),(2,5,2),(2,5,3),(2,5,4),
                       (3,5,0),(3,5,1),(3,5,2),(3,5,3),(3,5,4),
                       (4,0,5),(4,1,5),(4,2,5),(4,3,5),(4,4,5),]
 
-        mf_names = ['far left', 'near left', 'zero', 'near right', 'far right', 'zero']
-        m_name = ['distance', 'near', 'far']
-        o_names = ['far left', 'left', 'near left', 'zero', 'close right', 'right', 'hard right']
+        # 0 = 'far_left'
+        # 1 = 'near_left'
+        # 2 = 'close_left'
+        # 3 = 'zero'
+        # 4 = 'close_right'
+        # 5 = 'near_right'
+        # 6 = 'far_right'
+        # 7 = 'none'
+        mf_indices = [(0,0,5,5,1),(0,1,5,5,1),(0,2,5,5,1),(0,3,5,5,1),(0,4,5,5,1),
+                      (1,5,0,5,1),(1,5,1,5,1),(1,5,2,5,1),(1,5,3,5,1),(1,5,4,5,1),
+                      (2,5,0,5,1),(2,5,1,5,1),(2,5,2,5,1),(2,5,3,5,1),(2,5,4,5,1),
+                      (3,5,0,5,1),(3,5,1,5,1),(3,5,2,5,1),(3,5,3,5,1),(3,5,4,5,1),
+                      (4,5,0,5,1),(4,5,1,5,1),(4,5,2,5,1),(4,5,3,5,1),(4,5,4,5,1),
+                      (5,5,0,5,1),(5,5,1,5,1),(5,5,2,5,1),(5,5,3,5,1),(5,5,4,5,1),
+                      (6,0,5,5,1),(6,1,5,5,1),(6,2,5,5,1),(6,3,5,5,1),(6,4,5,5,1),
+                      (7,5,5,0,0),(7,5,5,1,0),(7,5,5,2,0),(7,5,5,3,0),(7,5,5,4,0),]
+
+        # mf_names = ['far left', 'near left', 'zero', 'near right', 'far right', 'zero']
+        # m_name = ['distance', 'far', 'near']
+        # o_names = ['far left', 'left', 'near left', 'zero', 'close right', 'right', 'hard right']
     #    self.mf_indices = torch.tensor((mf_indices))
 
         ########popping one rule base
@@ -178,6 +201,14 @@ class AntecedentLayer(torch.nn.Module):
         #           -2,-1,0,1,2,
         #           -1,0,1,2,3,
         #           3,2,0,-2,-3]
+
+        # 0 = 'right3'
+        # 1 = 'right2'
+        # 2 = 'right1'
+        # 3 = 'zero'
+        # 4 = 'left1'
+        # 5 = 'left2'
+        # 6 = 'left3'
         mf_out = [
                 (6,),  # 1
                 (5,),  # 2
@@ -205,22 +236,83 @@ class AntecedentLayer(torch.nn.Module):
                 (5,),  # 24
                 (6,),  # 25
             ]
-        rules = []
+        # 0 = 'left4'
+        # 1 = 'left3'
+        # 2 = 'left2'
+        # 3 = 'left1'
+        # 4 = 'zero'
+        # 5 = 'right1'
+        # 6 = 'right2'
+        # 7 = 'right3'
+        # 8 = 'right4'
 
-        for ind, ou in zip(mf_indices, mf_out):
-            rule = []
-            # ou += 3
+        mf_out = [
+                (8,),  # 1
+                (5,),  # 2
+                (4,),  # 3
+                (3,),  # 4
+                (0,),  # 5
 
-            for i, v in enumerate(ind):
-                if v != 5:
-                    rule.append(f'{m_name[i]} is {mf_names[v]}')
+                (8,),  # 6
+                (7,),  # 7
+                (6,),  # 8
+                (5,),  # 9
+                (2,),  # 10
 
-            rule = ' AND '.join(rule)
+                (8,),  # 11
+                (6,),  # 12
+                (5,),  # 13
+                (4,),  # 14
+                (1,),  # 15
 
-            rule += f" THEN {o_names[ou[0]]}"
-            rules.append(rule)
+                (7,),  # 16
+                (5,),  # 17
+                (4,),  # 18
+                (3,),  # 19
+                (1,),  # 20
 
-        print('\n'.join(rules))
+                (7,),  # 21
+                (4,),  # 22
+                (3,),  # 23
+                (2,),  # 24
+                (0,),  # 25
+
+                (6,),  # 26
+                (3,),  # 27
+                (2,),  # 28
+                (1,),  # 29
+                (0,),  # 30
+
+                (8,),  # 31
+                (5,),  # 32
+                (4,),  # 33
+                (3,),  # 34
+                (0,),  # 35
+
+                (8,),  # 36
+                (6,),  # 37
+                (4,),  # 38
+                (2,),  # 39
+                (0,),  # 40
+            ]
+
+        # rules = []
+        #
+        # for ind, ou in zip(mf_indices, mf_out):
+        #     rule = []
+        #     # ou += 3
+        #
+        #     for i, v in enumerate(ind):
+        #         if v != 5:
+        #             rule.append(f'{m_name[i]} is {mf_names[v]}')
+        #
+        #     rule = ' AND '.join(rule)
+        #
+        #     rule += f" THEN {o_names[ou[0]]}"
+        #     rules.append(rule)
+        #
+        # print('\n'.join(rules))
+
         # import sys
         # sys.exit()
         # outputs_membership = [
@@ -426,8 +518,9 @@ class AnfisNet(torch.nn.Module):
         self.input_keywords = input_keywords
         self.number_of_mfs = number_of_mfs
         #######setting number of rule base for anfis structure
-        self.num_rules = np.prod([len(mfs) for _, mfs in invardefs]) ##full comb
+        # self.num_rules = np.prod([len(mfs) for _, mfs in invardefs]) ##full comb
         self.num_rules = 25
+        self.num_rules = 40
         ###############################################################
         #print(mfdefs[0]['()'])
         print(self.num_rules)
@@ -476,33 +569,65 @@ class AnfisNet(torch.nn.Module):
                 (6,),  # 25
             ]
 
-        # mf_out = [
-        #         (6,),  # 1
-        #         (5,),  # 2
-        #         (3,),  # 3
-        #         (1,),  # 4
-        #         (0,),  # 5
-        #         (0,),  # 6
-        #         (1,),  # 7
-        #         (3,),  # 8
-        #         (5,),  # 9
-        #         (6,),  # 10
-        #         (6,),  # 11
-        #         (5,),  # 12
-        #         (4,),  # 13
-        #         (3,),  # 14
-        #         (2,),  # 15
-        #         (5,),  # 16
-        #         (4,),  # 17
-        #         (3,),  # 18
-        #         (2,),  # 19
-        #         (1,),  # 20
-        #         (4,),  # 21
-        #         (3,),  # 22
-        #         (2,),  # 23
-        #         (1,),  # 24
-        #         (0,),  # 25
-        #     ]
+        # 0 = 'left4'
+        # 1 = 'left3'
+        # 2 = 'left2'
+        # 3 = 'left1'
+        # 4 = 'zero'
+        # 5 = 'right1'
+        # 6 = 'right2'
+        # 7 = 'right3'
+        # 8 = 'right4'
+
+        mf_out = [
+                (8,),  # 1
+                (5,),  # 2
+                (4,),  # 3
+                (3,),  # 4
+                (0,),  # 5
+
+                (8,),  # 6
+                (7,),  # 7
+                (6,),  # 8
+                (5,),  # 9
+                (2,),  # 10
+
+                (8,),  # 11
+                (6,),  # 12
+                (5,),  # 13
+                (4,),  # 14
+                (1,),  # 15
+
+                (7,),  # 16
+                (5,),  # 17
+                (4,),  # 18
+                (3,),  # 19
+                (1,),  # 20
+
+                (7,),  # 21
+                (4,),  # 22
+                (3,),  # 23
+                (2,),  # 24
+                (0,),  # 25
+
+                (6,),  # 26
+                (3,),  # 27
+                (2,),  # 28
+                (1,),  # 29
+                (0,),  # 30
+
+                (8,),  # 31
+                (5,),  # 32
+                (4,),  # 33
+                (3,),  # 34
+                (0,),  # 35
+
+                (8,),  # 36
+                (6,),  # 37
+                (4,),  # 38
+                (2,),  # 39
+                (0,),  # 40
+            ]
 
         if self.hybrid:
             cl = ConsequentLayer(self.num_in, self.num_rules, self.num_out)

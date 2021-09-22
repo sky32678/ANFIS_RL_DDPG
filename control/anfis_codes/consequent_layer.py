@@ -305,6 +305,8 @@ class MamdaniConsequentLayer(torch.nn.Module):
         super().__init__()
         self.mamdani_defs = mamdani_defs
         self.output_membership_mapping = output_membership_mapping
+        # print(mamdani_defs)
+        # print(output_membership_mapping)
 
     def forward(self, x):
         self.mamdani_defs.cache()
