@@ -11,10 +11,11 @@ from utils.path import test_course, test_course2, test_course3
 from torch.utils.tensorboard import SummaryWriter
 from plot_functions.plots import plot_mamdani, _plot_mfs, plot_all_mfs
 
-def tensorboard_plot(agent,i,summary, test_path, robot_path, control_law_save, dis_error, mae, rmse):
+def tensorboard_plot(agent,i,summary, test_path, robot_path, control_law_save, dis_error, mae, rmse, best_mae):
 
     summary.add_scalar("Error/Dist Error MAE", mae, i+1)
     summary.add_scalar("Error/Dist Error RMSE", rmse, i+1)
+    summary.add_scalar("Error/Best Error So far", best_mae, i+1)
 
     fig, ax = plt.subplots()
     ax.plot(test_path[:-1, 0], test_path[:-1, 1])
