@@ -10,8 +10,8 @@ from anfis_codes.model import *
 anf = Anfis().my_model()
 #print(env.action_space.shape)
 #env = gym.make('CartPole-v1')
-num_inputs, num_outputs = 3, 1
-agent = DDPGagent(num_inputs, num_outputs, anf)
+num_inputs, num_outputs = 5, 1
+agent = DDPGagent(num_inputs, num_outputs, anf, 32, 1e-4, 1e-3)
 actor = agent.actor
 critic = agent.critic
 torch.save(agent, 'anfis_initialized.model')

@@ -12,6 +12,9 @@ import torch
 import anfis_codes.anfis
 import os
 import datetime
+from rl.ddpg import DDPGagent
+from rl.memory import *
+from anfis_codes.model import *
 from utils.utils import reward, angdiff, wraptopi
 from utils.path import test_course, test_course2, test_course3
 from torch.utils.tensorboard import SummaryWriter
@@ -55,6 +58,7 @@ def fuzzy_error(curr, tar, future):
 
     distanceLine= np.linalg.norm(np.array([x,y])-proj.T,2)*side                     ##########################check this
     dis_error.append(distanceLine)
+    distance_target = ((tar[0] - x)**2 + (tar[1] - y)**2)**(0.5)
 
     farTarget = np.array( [0.9*proj[0] + 0.1*tar[0], 0.9*proj[1] + 0.1*tar[1]] )
     th1 = math.atan2(farTarget[1]-y, farTarget[0]-x)
@@ -62,11 +66,12 @@ def fuzzy_error(curr, tar, future):
     th3 = math.atan2(future[1]-tar[1], future[0]-tar[0])
     theta_far = th1 - currentAngle
     theta_near = th2 - currentAngle
+    theta_lookahead = th3 - currentAngle
     theta_far = wraptopi(theta_far)
     theta_near = wraptopi(theta_near)
 
 
-    return [distanceLine,theta_far,theta_near]
+    return [distanceLine,theta_far,theta_near,theta_lookahead,distance_target]
 
 def target_generator(path):
     global path_count
@@ -157,7 +162,7 @@ def agent_update(new_state, linear_velocity, control_law, agent, done, batch_siz
     new_state = np.array(new_state)
     agent.curr_states = new_state
     agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
-    if len(agent.memory) > batch_size and abs(curr_dis_error) > 0.125:
+    if len(agent.memory) > batch_size and abs(curr_dis_error) > 0.10:
         agent.update(batch_size)
 
 
@@ -224,22 +229,32 @@ def wait_pose():
 ###############################################33
 
 if __name__ == "__main__":
-    epoch = 500
-    vel_gain = 2.0
+    epoch = 200
+    vel_gain = 1.0
     path_tranform_enable = True
     batch_size = 128
     linear_velocity = 1.5
+    actor_lr = 1e-4
+    critic_lr = 1e-3
+    gamma = 0.9
+    tau = 1e-3
+    update_rate = 10
 
     test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
-    for i in range(len(test_path)):
-        test_path[i][0] = test_path[i][0] / 1.25
-        test_path[i][1] = test_path[i][1] / 1.25
+    # for i in range(len(test_path)):
+    #     test_path[i][0] = test_path[i][0] / 1.25
+    #     test_path[i][1] = test_path[i][1] / 1.25
 
     pathlength = len(test_path)
     test_path.append([100,0])
 
+    anf = Anfis().my_model()
+    #print(env.action_space.shape)
+    #env = gym.make('CartPole-v1')
+    num_inputs, num_outputs = 5, 1
+    agent = DDPGagent(num_inputs, num_outputs, anf, 32, actor_lr, critic_lr, gamma, tau)
+    # agent= torch.load('anfis_initialized.model')
 
-    agent= torch.load('anfis_initialized.model')
     rospy.init_node('check_odometry')
     # sub = rospy.Subscriber("/odom", Odometry, callback)
     sub = rospy.Subscriber("/odometry/filtered", Odometry, callback)
@@ -254,8 +269,7 @@ if __name__ == "__main__":
     # summary = SummaryWriter(f'/home/nvidia/catkin_ws/src/woojin/jackal/control/figures/{name}')
 
     wait_pose()
-
-    dis_e = []
+    best_mae = 10
     for i in range(epoch):
         robot_path = []
         dis_error = []
@@ -276,6 +290,10 @@ if __name__ == "__main__":
 
             if stop == True:
                 print("STOP")
+                # os.system('rosservice call /gazebo/reset_world "{}"')
+                # rospy.sleep(0.05)
+                # os.system('rosservice call /set_pose "{}"')
+                # rospy.sleep(0.05)
                 break
 
             new_state = fuzzy_error(current_point, target_point, future_point)
@@ -292,7 +310,7 @@ if __name__ == "__main__":
             twist_msg.linear.x = linear_velocity
             twist_msg.angular.z = control_law
 
-            if timer % 50 == 0:
+            if timer % update_rate == 0:
                 agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0])
                 timer = 0
 
@@ -305,29 +323,32 @@ if __name__ == "__main__":
 
         mae = np.mean(np.abs(dis_error))
         print("MAE", mae)
+        if best_mae > mae:
+            best_mae = mae
+        print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].a)
+        print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].b)
+        print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].c)
+        print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].d)
 
         rmse = np.sqrt(np.mean(np.power(dis_error, 2)))
         print("RMSE", rmse)
 
-        dis_e.append(mae)
-
         test_path = np.array(test_path)
         robot_path = np.array(inverse_transform_poses(robot_path))
 
-        tensorboard_plot(agent, i, summary, test_path, robot_path, control_law_save, dis_error, mae, rmse)
+        tensorboard_plot(agent, i, summary, test_path, robot_path, control_law_save, dis_error, mae, rmse, best_mae)
         plot_all_mfs(agent.actor, summary, i)
         plot_mamdani(agent.actor, summary, i)
 
         torch.save(agent,'models/anfis_ddpg_trained{}.model'.format(i+1))
 
         test_path = test_course3()
-        for i in range(len(test_path)):
-            test_path[i][0] = test_path[i][0] / 1.25
-            test_path[i][1] = test_path[i][1] / 1.25
+        # for i in range(len(test_path)):
+        #     test_path[i][0] = test_path[i][0] / 1.25
+        #     test_path[i][1] = test_path[i][1] / 1.25
         test_path.append([100,0])
     # torch.save(agent,'anfis_ddpg_trained.model')
     ####plot
     # plt.plot(test_path[:-1,0], test_path[:-1,1])
     # plt.plot(robot_path[:,0], robot_path[:,1])
     # plt.savefig("figures/mygraph.png")
-    print(dis_e)
