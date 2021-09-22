@@ -1,0 +1,27 @@
+experiment_info:
+  # Main algorithm choices
+  experiment_name: DDPG
+  agent: rlcycle.ddpg.agent.DDPGAgent
+  learner: rlcycle.ddpg.learner.DDPGLearner
+  critic_loss: rlcycle.ddpg.loss.CriticLoss
+  actor_loss: rlcycle.ddpg.loss.ActorLoss
+  action_selector: rlcycle.ddpg.action_selector.DDPGActionSelector
+  device: cuda
+  log_wandb: True
+
+  # Environment info
+  env:
+    name: ReacherPyBulletEnv-v0
+    is_atari: False
+    is_bullet: True
+    
+  # Experiment default arguments:
+  total_num_episodes: 50000
+  test_interval: 500  # Test every 50 episodes
+  test_num: 10  # Number of episodes to test during test phase
+  render_train: False
+  render_test: False
+
+defaults:
+ - hyper_params: ddpg_lillicrap2015
+ - models: ddpg

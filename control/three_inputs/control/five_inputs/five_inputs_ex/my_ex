@@ -1,0 +1,25 @@
+
+
+import sys
+import itertools
+import numpy as np
+
+import torch
+from torch.utils.data import TensorDataset, DataLoader
+
+import anfis
+from membership import TrapezoidalMembFunc, make_trap_mfs
+from experimental import train_anfis, test_anfis
+dtype = torch.float
+
+def ex1_model():
+    '''
+        These are the original (untrained) MFS for Jang's example 1.
+    '''
+    invardefs = [
+            ('x0', make_bell_mfs(3.33333, 2, [-10, -3.333333, 3.333333, 10])),
+            ('x1', make_bell_mfs(3.33333, 2, [-10, -3.333333, 3.333333, 10])),
+            ]
+    outvars = ['y0']
+    anf = anfis.AnfisNet('Jang\'s example 1', invardefs, outvars)
+    return anf
