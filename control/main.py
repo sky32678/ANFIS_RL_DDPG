@@ -142,6 +142,7 @@ def callback(msg):
     global currentAngle
     global firstPoseTrigger
     global battery_status
+    global is_simulation
     firstPoseTrigger = True
     x = msg.pose.pose.position.x
     y = msg.pose.pose.position.y
@@ -164,10 +165,10 @@ def agent_update(new_state, linear_velocity, control_law, agent, done, batch_siz
     new_state = np.array(new_state)
     agent.curr_states = new_state
 
-    last_10_dis_error = np.mean(dis_error[-20:])
+    # last_10_dis_error = np.mean(dis_error[-20:])
     # if abs(curr_dis_error) > 0.125:
     agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
-    if len(agent.memory) > batch_size and abs(last_10_dis_error) > 0.10: #abs(curr_dis_error) > 0.10
+    if len(agent.memory) > batch_size and abs(curr_dis_error) > 0.10:
         agent.update(batch_size)
 
 
@@ -254,7 +255,7 @@ if __name__ == "__main__":
     #     test_path[i][0] = test_path[i][0] / 1.25
     #     test_path[i][1] = test_path[i][1] / 1.25
 
-    pathlength = len(test_path)
+    # pathlength = len(test_path)
     test_path.append([100,0])
 
     anf = Anfis().my_model()
@@ -286,7 +287,7 @@ if __name__ == "__main__":
     for i in range(epoch):
         if is_simulation == False:
             print("YOU CAN MOVE")
-            rospy.sleep(3)
+            rospy.sleep(10)
 
         robot_path = []
         dis_error = []
@@ -342,10 +343,10 @@ if __name__ == "__main__":
         print("MAE", mae)
         if best_mae > mae:
             best_mae = mae
-        print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].a)
-        print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].b)
-        print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].c)
-        print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].d)
+        # print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].a)
+        # print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].b)
+        # print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].c)
+        # print(agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].d)
 
         rmse = np.sqrt(np.mean(np.power(dis_error, 2)))
         print("RMSE", rmse)
