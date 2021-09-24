@@ -141,6 +141,7 @@ def callback(msg):
     global done
     global currentAngle
     global firstPoseTrigger
+    global battery_status
     firstPoseTrigger = True
     x = msg.pose.pose.position.x
     y = msg.pose.pose.position.y
@@ -149,7 +150,8 @@ def callback(msg):
     q4 = msg.pose.pose.orientation.z
     q1 = msg.pose.pose.orientation.w
     currentAngle = math.atan2(2*(q1*q4+q2*q3),1-2*(q3**2+q4**2))
-
+    if is_simulation == False:
+        battery_status = 0
     if stop == False:
         robot_path.append([x,y])
     # print('x position: ',x)
@@ -161,8 +163,11 @@ def agent_update(new_state, linear_velocity, control_law, agent, done, batch_siz
     state = agent.curr_states
     new_state = np.array(new_state)
     agent.curr_states = new_state
+
+    last_10_dis_error = np.mean(dis_error[-20:])
+    # if abs(curr_dis_error) > 0.125:
     agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
-    if len(agent.memory) > batch_size and abs(curr_dis_error) > 0.10:
+    if len(agent.memory) > batch_size and abs(last_10_dis_error) > 0.10: #abs(curr_dis_error) > 0.10
         agent.update(batch_size)
 
 
@@ -229,6 +234,9 @@ def wait_pose():
 ###############################################33
 
 if __name__ == "__main__":
+    global is_simulation
+    is_simulation = True
+
     epoch = 200
     vel_gain = 1.0
     path_tranform_enable = True
@@ -239,6 +247,7 @@ if __name__ == "__main__":
     gamma = 0.9
     tau = 1e-3
     update_rate = 10
+
 
     test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
     # for i in range(len(test_path)):
@@ -261,16 +270,24 @@ if __name__ == "__main__":
     pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
     timer = 0
 
-    name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
+
 
     #For Desktop
-    summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
+    if is_simulation:
+        name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
+        summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
+    else:
     #For jackal
-    # summary = SummaryWriter(f'/home/nvidia/catkin_ws/src/woojin/jackal/control/figures/{name}')
+        name = f'OUTDOORL TEST RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
+        summary = SummaryWriter(f'/home/nvidia/catkin_ws/src/woojin/jackal/control/figures/{name}')
 
     wait_pose()
     best_mae = 10
     for i in range(epoch):
+        if is_simulation == False:
+            print("YOU CAN MOVE")
+            rospy.sleep(3)
+
         robot_path = []
         dis_error = []
         control_law_save = []
@@ -347,6 +364,8 @@ if __name__ == "__main__":
         #     test_path[i][0] = test_path[i][0] / 1.25
         #     test_path[i][1] = test_path[i][1] / 1.25
         test_path.append([100,0])
+        if is_simulation == False:
+            print("Battery Status: ", battery_status, "%")
     # torch.save(agent,'anfis_ddpg_trained.model')
     ####plot
     # plt.plot(test_path[:-1,0], test_path[:-1,1])
