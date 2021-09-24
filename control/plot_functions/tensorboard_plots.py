@@ -38,6 +38,10 @@ def tensorboard_plot(agent,i,summary, test_path, robot_path, control_law_save, d
     summary.add_scalar("Distance_line/mf1/d",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf1'].d, i+1)
     summary.add_scalar("Distance_line/mf2/b",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf2'].b, i+1)
     summary.add_scalar("Distance_line/mf2/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf2'].c, i+1)
+    summary.add_scalar("Distance_line/mf3/b",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].b, i+1)
+    summary.add_scalar("Distance_line/mf3/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].c, i+1)
+    # summary.add_scalar("Distance_line/mf2/b",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].c, i+1)
+    # summary.add_scalar("Distance_line/mf2/c",agent.actor.layer['fuzzify'].varmfs['distance_line'].mfdefs['mf3'].d, i+1)
 
     summary.add_scalar("theta_far/mf0/c",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf0'].c, i+1)
     summary.add_scalar("theta_far/mf0/d",agent.actor.layer['fuzzify'].varmfs['theta_far'].mfdefs['mf0'].d, i+1)
