@@ -158,18 +158,21 @@ def callback(msg):
     # print('x position: ',x)
     # print('y position: ',y)
 
-def agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, curr_dis_error):
+def agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, curr_dis_error, best_mae):
     rewards = reward(new_state, linear_velocity, control_law)/15.
     ####do this every 0.075 s
     state = agent.curr_states
     new_state = np.array(new_state)
     agent.curr_states = new_state
 
-    # last_10_dis_error = np.mean(dis_error[-20:])
+    last_10_dis_error = np.mean(np.abs(dis_error[-20:]))
     # if abs(curr_dis_error) > 0.125:
     agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
-    if len(agent.memory) > batch_size and abs(curr_dis_error) > 0.10:
-        agent.update(batch_size)
+    if len(agent.memory) > batch_size:
+        if best_mae > 0.08:
+            agent.update(batch_size)
+        elif last_10_dis_error > 0.10:
+            agent.update(batch_size)
 
 
 
@@ -245,7 +248,7 @@ if __name__ == "__main__":
     linear_velocity = 1.5
     actor_lr = 1e-4
     critic_lr = 1e-3
-    gamma = 0.9
+    gamma = 0.99
     tau = 1e-3
     update_rate = 10
 
@@ -329,7 +332,7 @@ if __name__ == "__main__":
             twist_msg.angular.z = control_law
 
             if timer % update_rate == 0:
-                agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0])
+                agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0], best_mae)
                 timer = 0
 
             pub.publish(twist_msg)
