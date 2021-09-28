@@ -235,12 +235,13 @@ def wait_pose():
 
 if __name__ == '__main__':
     parameter_config = {
-        'critic_lr': [1e-4, 1e-5, 1e-6],
-        'actor_lr': [1e-3, 1e-4, 1e-5],
+        'actor_lr': [1e-4, 1e-5],
+        'critic_lr': [1e-3, 1e-4, 1e-5],
         'hidden_size': [8, 16, 32, 64],
         # 'actor_decay': [1, 0.95, 0.9],
         # 'critic_decay': [1, 0.95, 0.9],
-        'batch_size': [16, 32, 64, 128]
+        'batch_size': [64,128]
+        # 'batch_size': [16, 32, 64, 128]
     }
 
 
@@ -258,7 +259,7 @@ if __name__ == '__main__':
             name = ','.join([f"{k}={v}" for k, v in parameters.items()])
             gamma = 0.9
             tau = 1e-3
-            summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
+            summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/hyper_tuner/{name}')
             # os.mkdir(os.path.join(summary.get_logdir(), 'checkpoints'))
             anf = Anfis().my_model()
             #print(env.action_space.shape)
@@ -273,17 +274,17 @@ if __name__ == '__main__':
             pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
             timer = 0
 
-            name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
+            # name = f'Gazebo RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
 
             #For Desktop
-            summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
+            # summary = SummaryWriter(f'/home/auvsl/catkin_woojin/tensorboard_storage/{name}')
             #For jackal
             # summary = SummaryWriter(f'/home/nvidia/catkin_ws/src/woojin/jackal/control/figures/{name}')
 
             wait_pose()
             best_mae = 10
 
-            epoch = 100
+            epoch = 150
             vel_gain = 1.0
             path_tranform_enable = True
             linear_velocity = 1.5
