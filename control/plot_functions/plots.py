@@ -34,12 +34,17 @@ def _plot_mfs(var_name, fv, model, summary,epoch):
     '''
 
     zero_length = (model.number_of_mfs[model.input_keywords[0]])
-    x = torch.zeros(10000)
-    y = -5
+    x = torch.zeros(6000)
+    y = -3
+    plot_range = 6000
+    if zero_length == 2:
+        y = -1
+        x = torch.zeros(2000)
+        plot_range = 2000
 
     fig, ax = plt.subplots()
 
-    for i in range(10000):
+    for i in range(plot_range):
         x[i] = torch.tensor(y)
         y += 0.001
     for mfname, yvals in fv.fuzzify(x):
