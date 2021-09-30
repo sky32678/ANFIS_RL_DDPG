@@ -156,15 +156,15 @@ def averaging7(model,input):
     left = -avg
     right = avg
     with torch.no_grad():
-        # if input == 'distance_line':
-        #     if left > -0.05:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(-0.05,dtype=torch.float))
-        #     else:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(left,dtype=torch.float))
-        #     if right < 0.05:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(0.05,dtype=torch.float))
-        #     else:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
+        if input == 'distance_line':
+            if left > -0.03:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(-0.03,dtype=torch.float))
+            else:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(left,dtype=torch.float))
+            if right < 0.03:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(0.03,dtype=torch.float))
+            else:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
         # elif input == 'theta_near':
         #     if left > -0.025:
         #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(-0.025,dtype=torch.float))
@@ -174,9 +174,9 @@ def averaging7(model,input):
         #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(0.025,dtype=torch.float))
         #     else:
         #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
-        # else:
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(left,dtype=torch.float))
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
+        else:
+            model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(left,dtype=torch.float))
+            model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
 def mfs_constraint(model):
 
     for i in range(len(model.input_keywords)):
@@ -281,7 +281,9 @@ class DDPGagent:
         self.actor_optimizer.zero_grad()
         policy_loss.backward()
         self.actor_optimizer.step()
+
         mfs_constraint(self.actor)
+
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
         self.critic_optimizer.step()
