@@ -378,7 +378,7 @@ class Anfis(nn.Module):
                                 TrapezoidalMembFunc(1.4, 2.4, np.pi, np.pi,5),
                                 Zero()]),
 
-                ('distance', [TrapezoidalMembFunc(0, 0, 0.5, 0.7,1,2),
+                ('distance_target', [TrapezoidalMembFunc(0, 0, 0.5, 0.7,1,2),
                                 TrapezoidalMembFunc(0.5, 0.7, 100, 100,2,2)
                                 ])
 
