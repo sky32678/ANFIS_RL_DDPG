@@ -158,27 +158,17 @@ def callback(msg):
     # print('x position: ',x)
     # print('y position: ',y)
 
-
-def memory_push(new_state, linear_velocity, control_law, agent, done, batch_size, curr_dis_error, best_mae):
-
+def agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, curr_dis_error, best_mae):
     rewards = reward(new_state, linear_velocity, control_law)/15.
     ####do this every 0.075 s
     state = agent.curr_states
     new_state = np.array(new_state)
     agent.curr_states = new_state
 
-    agent.memory.push(state,control_law,rewards,new_state,done)
-
-def agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, curr_dis_error, best_mae):
-    # rewards = reward(new_state, linear_velocity, control_law)/15.
-    # ####do this every 0.075 s
-    # state = agent.curr_states
-    # new_state = np.array(new_state)
-    # agent.curr_states = new_state
     last_10_dis_error = np.mean(np.abs(dis_error[-20:]))
-    # # if abs(curr_dis_error) > 0.125:
-    # agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
-    # # if len(agent.memory) > batch_size:
+    # if abs(curr_dis_error) > 0.125:
+    agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
+    # if len(agent.memory) > batch_size:
     #     agent.update(batch_size)
 
     if len(agent.memory) > batch_size:
@@ -345,8 +335,6 @@ if __name__ == "__main__":
             twist_msg.linear.x = linear_velocity
             twist_msg.angular.z = control_law
 
-            ##pushing to memeory every time in whileloop
-            memory_push(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0], best_mae)
             if timer % update_rate == 0:
                 agent_update(new_state, linear_velocity, control_law, agent, done, batch_size, new_state[0], best_mae)
                 timer = 0
