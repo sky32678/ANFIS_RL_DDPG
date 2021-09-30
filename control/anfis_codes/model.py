@@ -5,7 +5,7 @@ import torch.autograd
 import anfis_codes.anfis as anfis
 from anfis_codes.membership import make_tri_mfs, TriangularMembFunc, TrapezoidalMembFunc, make_bell_mfs, BellMembFunc, make_trap_mfs, Zero, make_zero
 from torch.autograd import Variable
-from anfis_codes.antecedent_layer import JointTrapMembershipV2, JointSingleConstrainedEdgeMembership, Joint7TrapMembership
+# from anfis_codes.antecedent_layer import JointTrapMembershipV2, JointSingleConstrainedEdgeMembership, Joint7TrapMembership
 from anfis_codes.joint_mamdani_membership import JointSymmetricTriangleMembership,JointSymmetric9TriangleMembership
 import numpy as np
 
@@ -233,25 +233,25 @@ class Anfis(nn.Module):
     def __init__(self):
         super(Anfis, self).__init__()
     def my_model(self):
-        parameter_values = [
-            [0, 1],
-
-            [0, 2, .1, .2, .2],
-            [0, 1, .6, 0.6],
-            [0, 0.976657846180786, 0.27020001411438, 0.1281498670578],
-            [0, 1.52320299803035, 0.081358410418034, 0.103709816932678],  #
-
-            [0, 1, 1, 1, 1]
-        ]
-
-        x_joint_definitons = [
-            ('distance_target', JointSingleConstrainedEdgeMembership(*parameter_values[0], constant_center=False)),
-
-            ('distance_line', Joint7TrapMembership(*parameter_values[1], constant_center=True)),
-            ('theta_lookahead', JointTrapMembershipV2(*parameter_values[2], constant_center=True)),
-            ('theta_far', JointTrapMembershipV2(*parameter_values[3], constant_center=True)),
-            ('theta_near', JointTrapMembershipV2(*parameter_values[4], constant_center=True)),
-        ]
+        # parameter_values = [
+        #     [0, 1],
+        #
+        #     [0, 2, .1, .2, .2],
+        #     [0, 1, .6, 0.6],
+        #     [0, 0.976657846180786, 0.27020001411438, 0.1281498670578],
+        #     [0, 1.52320299803035, 0.081358410418034, 0.103709816932678],  #
+        #
+        #     [0, 1, 1, 1, 1]
+        # ]
+        #
+        # x_joint_definitons = [
+        #     ('distance_target', JointSingleConstrainedEdgeMembership(*parameter_values[0], constant_center=False)),
+        #
+        #     ('distance_line', Joint7TrapMembership(*parameter_values[1], constant_center=True)),
+        #     ('theta_lookahead', JointTrapMembershipV2(*parameter_values[2], constant_center=True)),
+        #     ('theta_far', JointTrapMembershipV2(*parameter_values[3], constant_center=True)),
+        #     ('theta_near', JointTrapMembershipV2(*parameter_values[4], constant_center=True)),
+        # ]
         invardefs = [
                 ##three inputs
                 # ('distance_line', [TrapezoidalMembFunc(-100, -100, -1.947, -1.2515,1),
