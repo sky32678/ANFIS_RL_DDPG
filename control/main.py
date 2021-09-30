@@ -287,7 +287,7 @@ if __name__ == "__main__":
     else:
     #For jackal
         name = f'OUTDOORL TEST RL {datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
-        summary = SummaryWriter(f'/home/nvidia/catkin_ws/src/woojin/jackal/control/figures/{name}')
+        summary = SummaryWriter(f'/home/nvidia/catkin_ws/src/woojin/ANFIS_RL_DDPG/control/figures/{name}')
 
     wait_pose()
     best_mae = 10
