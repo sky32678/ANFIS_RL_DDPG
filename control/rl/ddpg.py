@@ -215,7 +215,7 @@ def mfs_constraint(model):
 
 
 
-        if n_mfs == 2:
+        if n_mfs == 1: #it does not have a ZERO so 2-1
 
             model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d.item())
             model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].a.item())
