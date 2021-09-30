@@ -57,15 +57,15 @@ def tensorboard_plot(agent,i,summary, test_path, robot_path, control_law_save, d
     summary.add_scalar("theta_near/mf2/b",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf2'].b, i+1)
     summary.add_scalar("theta_near/mf2/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf2'].c, i+1)
 
-    summary.add_scalar("theta_lookahead/mf0/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf0'].c, i+1)
-    summary.add_scalar("theta_lookahead/mf0/d",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf0'].d, i+1)
-    summary.add_scalar("theta_lookahead/mf1/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf1'].c, i+1)
-    summary.add_scalar("theta_lookahead/mf1/d",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf1'].d, i+1)
-    summary.add_scalar("theta_lookahead/mf2/b",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf2'].b, i+1)
-    summary.add_scalar("theta_lookahead/mf2/c",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf2'].c, i+1)
+    summary.add_scalar("theta_lookahead/mf0/c",agent.actor.layer['fuzzify'].varmfs['theta_lookahead'].mfdefs['mf0'].c, i+1)
+    summary.add_scalar("theta_lookahead/mf0/d",agent.actor.layer['fuzzify'].varmfs['theta_lookahead'].mfdefs['mf0'].d, i+1)
+    summary.add_scalar("theta_lookahead/mf1/c",agent.actor.layer['fuzzify'].varmfs['theta_lookahead'].mfdefs['mf1'].c, i+1)
+    summary.add_scalar("theta_lookahead/mf1/d",agent.actor.layer['fuzzify'].varmfs['theta_lookahead'].mfdefs['mf1'].d, i+1)
+    summary.add_scalar("theta_lookahead/mf2/b",agent.actor.layer['fuzzify'].varmfs['theta_lookahead'].mfdefs['mf2'].b, i+1)
+    summary.add_scalar("theta_lookahead/mf2/c",agent.actor.layer['fuzzify'].varmfs['theta_lookahead'].mfdefs['mf2'].c, i+1)
 
-    summary.add_scalar("distance_target/mf0/d",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf0'].d, i+1)
-    summary.add_scalar("distance_target/mf1/a",agent.actor.layer['fuzzify'].varmfs['theta_near'].mfdefs['mf1'].a, i+1)
+    summary.add_scalar("distance_target/mf0/d",agent.actor.layer['fuzzify'].varmfs['distance_target'].mfdefs['mf0'].d, i+1)
+    summary.add_scalar("distance_target/mf1/a",agent.actor.layer['fuzzify'].varmfs['distance_target'].mfdefs['mf1'].a, i+1)
     critic = agent.critic
     l1 = critic.linear1
     l2 = critic.linear2
