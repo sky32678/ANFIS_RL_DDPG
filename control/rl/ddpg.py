@@ -126,6 +126,7 @@ def averaging7(model,input):
     left = -avg
     right = avg
     with torch.no_grad():
+
         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(left,dtype=torch.float))
         model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].c.copy_(torch.tensor(right,dtype=torch.float))
 
@@ -165,15 +166,15 @@ def averaging7(model,input):
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(0.03,dtype=torch.float))
             else:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
-        # elif input == 'theta_near':
-        #     if left > -0.025:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(-0.025,dtype=torch.float))
-        #     else:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(left,dtype=torch.float))
-        #     if right < 0.025:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(0.025,dtype=torch.float))
-        #     else:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
+        # # elif input == 'theta_near':
+        # #     if left > -0.025:
+        # #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(-0.025,dtype=torch.float))
+        # #     else:
+        # #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(left,dtype=torch.float))
+        # #     if right < 0.025:
+        # #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(0.025,dtype=torch.float))
+        # #     else:
+        # #         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
         else:
             model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(left,dtype=torch.float))
             model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))

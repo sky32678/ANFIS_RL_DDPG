@@ -168,14 +168,14 @@ def agent_update(new_state, linear_velocity, control_law, agent, done, batch_siz
     last_10_dis_error = np.mean(np.abs(dis_error[-20:]))
     # if abs(curr_dis_error) > 0.125:
     agent.memory.push(state,control_law,rewards,new_state,done)   ########control_law aftergain or before gain?
-    # if len(agent.memory) > batch_size:
-    #     agent.update(batch_size)
-
     if len(agent.memory) > batch_size:
-        if best_mae > 0.03:
-            agent.update(batch_size)
-        elif last_10_dis_error > 0.10:
-            agent.update(batch_size)
+        agent.update(batch_size)
+
+    # if len(agent.memory) > batch_size:
+    #     if best_mae > 0.04:
+    #         agent.update(batch_size)
+    #     elif last_10_dis_error > 0.10:
+    #         agent.update(batch_size)
 
 
 
@@ -247,9 +247,9 @@ if __name__ == "__main__":
     epoch = 200
     vel_gain = 1.0
     path_tranform_enable = True
-    batch_size = 128
+    batch_size =32
     linear_velocity = 1.5
-    actor_lr = 1e-4*5
+    actor_lr = 1e-4
     critic_lr = 1e-3
     gamma = 0.99
     tau = 1e-3
@@ -370,9 +370,9 @@ if __name__ == "__main__":
         test_path.append([100,0])
         if is_simulation == False:
             print("Battery Status: ", battery_status, "%")
-        if best_mae < 0.05:
-            for g in agent.actor_optimizer.param_groups:
-                g['lr'] = 1e-4
+        # if best_mae < 0.05:
+        #     for g in agent.actor_optimizer.param_groups:
+        #         g['lr'] = 1e-4
     # torch.save(agent,'anfis_ddpg_trained.model')
     ####plot
     # plt.plot(test_path[:-1,0], test_path[:-1,1])
