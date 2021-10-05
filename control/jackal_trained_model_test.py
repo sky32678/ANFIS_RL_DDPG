@@ -345,9 +345,8 @@ if __name__ == "__main__":
         plot_all_mfs(agent.actor, summary, i)
         plot_mamdani(agent.actor, summary, i)
 
-        summary.add_scalar("Untrained/Error/Untrained_Dist Error MAE{}".format(i), mae, i+1)
-        summary.add_scalar("Untrained/Error/Untrained_Dist Error RMSE{}".format(i), rmse, i+1)
-        # summary.add_scalar("Error/Best Error So far", best_mae, i+1)
+        summary.add_scalar("Error/Dist Error MAE", mae, i+1)
+        summary.add_scalar("Error/Dist Error RMSE", rmse, i+1)
 
         fig, ax = plt.subplots()
         ax.plot(test_path[:-1, 0], test_path[:-1, 1])
@@ -444,25 +443,25 @@ if __name__ == "__main__":
         plot_all_mfs(agent.actor, summary, i)
         plot_mamdani(agent.actor, summary, i)
 
-        summary.add_scalar("Trained/Error/Trained_Dist Error MAE{}".format(i), mae, i+1)
-        summary.add_scalar("Trained/Trained_Dist Error RMSE{}".format(i), rmse, i+1)
+        summary.add_scalar("Error/Dist Error MAE", mae, i+6)
+        summary.add_scalar("Error/Dist Error RMSE", rmse, i+6)
         # summary.add_scalar("Error/Best Error So far", best_mae, i+1)
 
         fig, ax = plt.subplots()
         ax.plot(test_path[:-1, 0], test_path[:-1, 1])
         ax.plot(robot_path[:, 0], robot_path[:, 1])
         ax.set_aspect('equal')
-        summary.add_figure("Trained/Gazebo/Trained{}".format(i), fig, i+1)
+        summary.add_figure("Trained/Gazebo/Trained{}".format(i+1), fig, i+1)
 
         fig, ax = plt.subplots()
         ax.plot(np.array(list(range(1,len(control_law_save)+1))), np.array(control_law_save))
 
-        summary.add_figure("Trained/Gazebo/Trained_Control_law{}".format(i), fig, i+1)
+        summary.add_figure("Trained/Gazebo/Trained_Control_law{}".format(i+1), fig, i+1)
 
         fig, ax = plt.subplots()
         ax.plot(np.array(list(range(1,len(dis_error)+1))), np.array(dis_error))
 
-        summary.add_figure("Trained/Gazebo/Trained_dis_errors{}".format(i), fig, i+1)
+        summary.add_figure("Trained/Gazebo/Trained_dis_errors{}".format(i+1), fig, i+1)
         if i == 0:
             test_path = test_8_shape()    ####testcoruse MUST start with 0,0 . Check this out
             # test_path.append([100,0])
