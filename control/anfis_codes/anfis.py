@@ -22,7 +22,6 @@ from anfis_codes.consequent_layer import MamdaniConsequentLayer
 
 dtype = torch.float
 
-
 class FuzzifyVariable(torch.nn.Module):
     '''
         Represents a single fuzzy variable, holds a list of its MFs.
