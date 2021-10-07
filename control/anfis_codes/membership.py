@@ -315,26 +315,26 @@ class TrapezoidalMembFunc(torch.nn.Module):
             if constraint == 1:
                 self.a = torch.tensor(a, requires_grad=False)
                 self.b = torch.tensor(b, requires_grad=False)
-                self.c = torch.tensor(c, requires_grad=False)
+                self.register_parameter('c', _mk_param(c))
                 self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 2:
-                self.register_parameter('a', _mk_param(a))
+                self.a = torch.tensor(a, requires_grad=False)
                 self.register_parameter('b', _mk_param(b))
-                self.c = torch.tensor(c, requires_grad=False)
+                self.register_parameter('c', _mk_param(c))
                 self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 3:
-                self.register_parameter('a', _mk_param(a))
+                self.a = torch.tensor(a, requires_grad=False)
                 self.register_parameter('b', _mk_param(b))
                 self.register_parameter('c', _mk_param(c))
-                self.register_parameter('d', _mk_param(d))
+                self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 4:
                 self.a = torch.tensor(a, requires_grad=False)
-                self.b = torch.tensor(b, requires_grad=False)
+                self.register_parameter('b', _mk_param(b))
                 self.register_parameter('c', _mk_param(c))
-                self.register_parameter('d', _mk_param(d))
+                self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 5:
                 self.a = torch.tensor(a, requires_grad=False)
-                self.b = torch.tensor(b, requires_grad=False)
+                self.register_parameter('b', _mk_param(b))
                 self.c = torch.tensor(c, requires_grad=False)
                 self.d = torch.tensor(d, requires_grad=False)
 
@@ -342,38 +342,39 @@ class TrapezoidalMembFunc(torch.nn.Module):
             if constraint == 1:
                 self.a = torch.tensor(a, requires_grad=False)
                 self.b = torch.tensor(b, requires_grad=False)
-                self.c = torch.tensor(c, requires_grad=False)
+                self.register_parameter('c', _mk_param(c))
                 self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 2:
-                self.register_parameter('a', _mk_param(a))
+                self.a = torch.tensor(a, requires_grad=False)
                 self.register_parameter('b', _mk_param(b))
-                self.c = torch.tensor(c, requires_grad=False)
+                self.register_parameter('c', _mk_param(c))
                 self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 3:
-                self.register_parameter('a', _mk_param(a))
+                self.a = torch.tensor(a, requires_grad=False)
                 self.register_parameter('b', _mk_param(b))
-                self.c = torch.tensor(c, requires_grad=False)
+                self.register_parameter('c', _mk_param(c))
                 self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 4:
-                self.register_parameter('a', _mk_param(a))
+                self.a = torch.tensor(a, requires_grad=False)
                 self.register_parameter('b', _mk_param(b))
                 self.register_parameter('c', _mk_param(c))
-                self.register_parameter('d', _mk_param(d))
+                self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 5:
                 self.a = torch.tensor(a, requires_grad=False)
-                self.b = torch.tensor(b, requires_grad=False)
+                self.register_parameter('b', _mk_param(b))
                 self.register_parameter('c', _mk_param(c))
-                self.register_parameter('d', _mk_param(d))
+                self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 6:
                 self.a = torch.tensor(a, requires_grad=False)
-                self.b = torch.tensor(b, requires_grad=False)
+                self.register_parameter('b', _mk_param(b))
                 self.register_parameter('c', _mk_param(c))
-                self.register_parameter('d', _mk_param(d))
+                self.d = torch.tensor(d, requires_grad=False)
             elif constraint == 7:
                 self.a = torch.tensor(a, requires_grad=False)
-                self.b = torch.tensor(b, requires_grad=False)
+                self.register_parameter('b', _mk_param(b))
                 self.c = torch.tensor(c, requires_grad=False)
                 self.d = torch.tensor(d, requires_grad=False)
+
 
         if n_mfs == 2:
             if constraint == 1:
@@ -382,8 +383,8 @@ class TrapezoidalMembFunc(torch.nn.Module):
                 self.c = torch.tensor(c, requires_grad=False)
                 self.register_parameter('d', _mk_param(d))
             elif constraint == 2:
-                self.register_parameter('a', _mk_param(a))
-                self.b = torch.tensor(b, requires_grad=False)
+                self.a = torch.tensor(a, requires_grad=False)
+                self.register_parameter('b', _mk_param(b))
                 self.c = torch.tensor(c, requires_grad=False)
                 self.d = torch.tensor(d, requires_grad=False)
 
