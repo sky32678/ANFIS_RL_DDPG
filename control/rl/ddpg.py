@@ -11,14 +11,14 @@ from rl.memory import *
 
 def averaging(model,input):
     #far
-    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].a.item())
-    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].d.item())
+    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf0'].c.item())
+    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].b.item())
     avg = (left + right) / 2
     left = -avg
     right = avg
     with torch.no_grad():
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].a.copy_(torch.tensor(left,dtype=torch.float))
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].d.copy_(torch.tensor(right,dtype=torch.float))
+        model.layer['fuzzify'].varmfs[input].mfdefs['mf0'].c.copy_(torch.tensor(left,dtype=torch.float))
+        model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].b.copy_(torch.tensor(right,dtype=torch.float))
 
     #close far
     left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].b.item())
@@ -31,8 +31,8 @@ def averaging(model,input):
         model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
 
     #near
-    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].a.item())
-    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].d.item())
+    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].c.item())
+    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.item())
     avg = (left + right) / 2
     left = -avg
     right = avg
@@ -56,8 +56,8 @@ def averaging(model,input):
         #     else:
         #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].d.copy_(torch.tensor(right,dtype=torch.float))
         # else:
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].a.copy_(torch.tensor(left,dtype=torch.float))
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].d.copy_(torch.tensor(right,dtype=torch.float))
+        model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].c.copy_(torch.tensor(left,dtype=torch.float))
+        model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(right,dtype=torch.float))
 
     #close_near
     left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.item())
@@ -66,16 +66,7 @@ def averaging(model,input):
     left = -avg
     right = avg
     with torch.no_grad():
-        # if input == 'theta_lookahead':
-        #     if left > -0.025:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(-0.025,dtype=torch.float))
-        #     else:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(left,dtype=torch.float))
-        #     if right < 0.025:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(0.025,dtype=torch.float))
-        #     else:
-        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(right,dtype=torch.float))
-        if input == 'theta_near':
+        if input == 'theta_lookahead':
             if left > -0.025:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(-0.025,dtype=torch.float))
             else:
@@ -84,20 +75,29 @@ def averaging(model,input):
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(0.025,dtype=torch.float))
             else:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(right,dtype=torch.float))
+        # if input == 'theta_near':
+        #     if left > -0.025:
+        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(-0.025,dtype=torch.float))
+        #     else:
+        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(left,dtype=torch.float))
+        #     if right < 0.025:
+        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(0.025,dtype=torch.float))
+        #     else:
+        #         model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(right,dtype=torch.float))
         else:
             model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.copy_(torch.tensor(left,dtype=torch.float))
             model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(right,dtype=torch.float))
 
 def averaging7(model,input):
     #far
-    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].a.item())
-    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf5'].d.item())
+    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf0'].c.item())
+    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf6'].b.item())
     avg = (left + right) / 2
     left = -avg
     right = avg
     with torch.no_grad():
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].a.copy_(torch.tensor(left,dtype=torch.float))
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf5'].d.copy_(torch.tensor(right,dtype=torch.float))
+        model.layer['fuzzify'].varmfs[input].mfdefs['mf0'].c.copy_(torch.tensor(left,dtype=torch.float))
+        model.layer['fuzzify'].varmfs[input].mfdefs['mf6'].b.copy_(torch.tensor(right,dtype=torch.float))
 
     #close far
     left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].b.item())
@@ -110,14 +110,14 @@ def averaging7(model,input):
         model.layer['fuzzify'].varmfs[input].mfdefs['mf5'].c.copy_(torch.tensor(right,dtype=torch.float))
 
     #near
-    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].a.item())
-    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].d.item())
+    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].c.item())
+    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf5'].b.item())
     avg = (left + right) / 2
     left = -avg
     right = avg
     with torch.no_grad():
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].a.copy_(torch.tensor(left,dtype=torch.float))
-        model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].d.copy_(torch.tensor(right,dtype=torch.float))
+        model.layer['fuzzify'].varmfs[input].mfdefs['mf1'].c.copy_(torch.tensor(left,dtype=torch.float))
+        model.layer['fuzzify'].varmfs[input].mfdefs['mf5'].b.copy_(torch.tensor(right,dtype=torch.float))
 
     #close_near
     left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].b.item())
@@ -131,24 +131,25 @@ def averaging7(model,input):
         model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].c.copy_(torch.tensor(right,dtype=torch.float))
 
     #close_near
-    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].a.item())
-    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].d.item())
+    left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.item())
+    right = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].b.item())
     avg = (left + right) / 2
     left = -avg
     right = avg
     with torch.no_grad():
         if input == 'distance_line':
-            if left > -0.2:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].a.copy_(torch.tensor(-0.2,dtype=torch.float))
+            const = 0.3
+            if left > -const:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(-const,dtype=torch.float))
             else:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].a.copy_(torch.tensor(left,dtype=torch.float))
-            if right < 0.2:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].d.copy_(torch.tensor(0.2,dtype=torch.float))
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(left,dtype=torch.float))
+            if right < const:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].b.copy_(torch.tensor(const,dtype=torch.float))
             else:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].d.copy_(torch.tensor(right,dtype=torch.float))
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].b.copy_(torch.tensor(right,dtype=torch.float))
         else:
-            model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].a.copy_(torch.tensor(left,dtype=torch.float))
-            model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].d.copy_(torch.tensor(right,dtype=torch.float))
+            model.layer['fuzzify'].varmfs[input].mfdefs['mf2'].c.copy_(torch.tensor(left,dtype=torch.float))
+            model.layer['fuzzify'].varmfs[input].mfdefs['mf4'].b.copy_(torch.tensor(right,dtype=torch.float))
 
     #close_near
     left = abs(model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.item())
@@ -158,12 +159,13 @@ def averaging7(model,input):
     right = avg
     with torch.no_grad():
         if input == 'distance_line':
-            if left > -0.02:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(-0.03,dtype=torch.float))
+            const = 0.001
+            if left > -const:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(-const,dtype=torch.float))
             else:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].b.copy_(torch.tensor(left,dtype=torch.float))
-            if right < 0.02:
-                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(0.03,dtype=torch.float))
+            if right < const:
+                model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(const,dtype=torch.float))
             else:
                 model.layer['fuzzify'].varmfs[input].mfdefs['mf3'].c.copy_(torch.tensor(right,dtype=torch.float))
         # # elif input == 'theta_near':
@@ -186,40 +188,46 @@ def mfs_constraint(model):
         if n_mfs == 5:
             averaging(model, model.input_keywords[i])
 
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].a.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].a.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].c.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].b.item())
 
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].d = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].b.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].a = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].c.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].d.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].a = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].c.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].d.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].c.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].c.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].c.item())
 
         if n_mfs == 7:
             averaging7(model, model.input_keywords[i])
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].a.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].a.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].d = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].c.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].c.item())
 
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].a.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].d = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].b.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].a = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].c.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].d.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf2'].c.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf3'].c.item())
 
 
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf5'].a = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].c.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf5'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].d.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf6'].a = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf5'].c.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf6'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf5'].d.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf5'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf5'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf4'].c.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf5'].d.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf6'].b.item())
+            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf6'].a.data = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf5'].c.item())
 
 
 
         if n_mfs == 1: #it does not have a ZERO so 2-1
+            left = abs(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d.item())
+            right = abs(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b.item())
+            avg = (left + right) / 2
+            with torch.no_grad():
+                model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d.copy_(torch.tensor(avg,dtype=torch.float))
+                model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b.copy_(torch.tensor(avg,dtype=torch.float))
 
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d.item())
-            model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].a.item())
+            # model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d.item())
+            # model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].a.item())
 
 
 class DDPGagent:
