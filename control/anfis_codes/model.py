@@ -115,13 +115,13 @@ class Anfis(nn.Module):
                 #                 ])
 
                 ##mar
-                ('distance_line', [TrapezoidalMembFunc(-100, -100, -2, -1.6,1,7),
-                                   TrapezoidalMembFunc(-2, -1.6, -1.4, -0.8,2,7),
+                ('distance_line', [TrapezoidalMembFunc(-100., -100., -2.0, -1.6,1,7),
+                                   TrapezoidalMembFunc(-2.0, -1.6, -1.4, -0.8,2,7),
                                    TrapezoidalMembFunc(-1.4, -0.8, -0.5, -0.1,3,7),
                                    TrapezoidalMembFunc( -0.5, -0.1, 0.1, 0.5,4,7),
                                    TrapezoidalMembFunc(0.1, 0.5, 0.8, 1.4,5,7),
-                                   TrapezoidalMembFunc(0.8, 1.4, 1.6, 2,6,7),
-                                   TrapezoidalMembFunc( 1.6, 2, 100, 100,7,7),
+                                   TrapezoidalMembFunc(0.8, 1.4, 1.6, 2.0,6,7),
+                                   TrapezoidalMembFunc( 1.6, 2.0, 100, 100,7,7),
                                    Zero()]),
 
                 ('theta_far', [TrapezoidalMembFunc(-np.pi, -np.pi, -2.4, -1.4,1),
@@ -157,8 +157,8 @@ class Anfis(nn.Module):
                                 TrapezoidalMembFunc(1.4, 2.4, np.pi, np.pi,5),
                                 Zero()]),
 
-                ('distance_target', [TrapezoidalMembFunc(0, 0, 0.1, 0.7,1,2),
-                                TrapezoidalMembFunc(0.1, 0.7, 100, 100,2,2)
+                ('distance_target', [TrapezoidalMembFunc(-100, -100, 0.0, 0.7,1,2),
+                                TrapezoidalMembFunc(0.0, 0.7, 100, 100,2,2)
                                 ])
 
 
