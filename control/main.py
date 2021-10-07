@@ -249,6 +249,7 @@ if __name__ == "__main__":
     path_tranform_enable = True
     batch_size = 32
     linear_velocity = 1.5
+    # actor_lr = 1e-5*2.5
     actor_lr = 1e-4
     critic_lr = 1e-3
     gamma = 0.99
@@ -370,9 +371,9 @@ if __name__ == "__main__":
         test_path.append([100,0])
         if is_simulation == False:
             print("Battery Status: ", battery_status, "%")
-        # if mae < 0.05:
+        # if mae < 0.04:
         #     for g in agent.actor_optimizer.param_groups:
-        #         g['lr'] = 1e-4/5
+        #         g['lr'] = 1e-5*2.5
     # torch.save(agent,'anfis_ddpg_trained.model')
     ####plot
     # plt.plot(test_path[:-1,0], test_path[:-1,1])
