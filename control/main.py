@@ -247,7 +247,7 @@ if __name__ == "__main__":
     epoch = 200
     vel_gain = 1.0
     path_tranform_enable = True
-    batch_size =32
+    batch_size = 32
     linear_velocity = 1.5
     actor_lr = 1e-4
     critic_lr = 1e-3
@@ -278,7 +278,7 @@ if __name__ == "__main__":
     pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
     timer = 0
 
-
+    print("batch_size:", batch_size, "center_width:", 0.001, "actor_lr:", actor_lr, "side dot dis_line:", 0.3)
 
     #For Desktop
     if is_simulation:
@@ -370,9 +370,9 @@ if __name__ == "__main__":
         test_path.append([100,0])
         if is_simulation == False:
             print("Battery Status: ", battery_status, "%")
-        # if best_mae < 0.05:
+        # if mae < 0.05:
         #     for g in agent.actor_optimizer.param_groups:
-        #         g['lr'] = 1e-4
+        #         g['lr'] = 1e-4/5
     # torch.save(agent,'anfis_ddpg_trained.model')
     ####plot
     # plt.plot(test_path[:-1,0], test_path[:-1,1])
