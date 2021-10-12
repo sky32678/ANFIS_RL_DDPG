@@ -363,23 +363,27 @@ if __name__ == "__main__":
         ax.plot(np.array(list(range(1,len(dis_error)+1))), np.array(dis_error))
 
         summary.add_figure("Untrained/Gazebo/Untrained_dis_errors{}".format(i), fig, i+1)
+
         if i == 0:
-            test_path = test_8_shape()    ####testcoruse MUST start with 0,0 . Check this out
-            # test_path.append([100,0])
-        if i == 1:
-            test_path = test_course()    ####testcoruse MUST start with 0,0 . Check this out
-            test_path.append([100,0])
-        if i == 2:
             test_path = test_course2()    ####testcoruse MUST start with 0,0 . Check this out
             test_path.append([100,0])
-        if i == 3:
+        if i == 1:
             test_path = test_course1()    ####testcoruse MUST start with 0,0 . Check this out
             test_path.append([100,0])
+        if i == 2:
+            test_path = test_course()    ####testcoruse MUST start with 0,0 . Check this out
+            test_path.append([100,0])
+        if i == 3:
+            test_path = test_8_shape()    ####testcoruse MUST start with 0,0 . Check this out
+            # test_path.append([100,0])
+
 
     test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
     test_path.append([100,0])
 
     agent= torch.load('anfis_trained.model')
+    print("TRAINED MODEL TURN")
+    rospy.sleep(10)
 
     for i in range(epoch):
         if is_simulation == False:
@@ -463,14 +467,14 @@ if __name__ == "__main__":
 
         summary.add_figure("Trained/Gazebo/Trained_dis_errors{}".format(i+1), fig, i+1)
         if i == 0:
-            test_path = test_8_shape()    ####testcoruse MUST start with 0,0 . Check this out
-            # test_path.append([100,0])
-        if i == 1:
-            test_path = test_course()    ####testcoruse MUST start with 0,0 . Check this out
-            test_path.append([100,0])
-        if i == 2:
             test_path = test_course2()    ####testcoruse MUST start with 0,0 . Check this out
             test_path.append([100,0])
-        if i == 3:
+        if i == 1:
             test_path = test_course1()    ####testcoruse MUST start with 0,0 . Check this out
             test_path.append([100,0])
+        if i == 2:
+            test_path = test_course()    ####testcoruse MUST start with 0,0 . Check this out
+            test_path.append([100,0])
+        if i == 3:
+            test_path = test_8_shape()    ####testcoruse MUST start with 0,0 . Check this out
+            # test_path.append([100,0])
