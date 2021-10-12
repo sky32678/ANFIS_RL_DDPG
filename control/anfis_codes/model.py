@@ -114,7 +114,7 @@ class Anfis(nn.Module):
                 #                 TrapezoidalMembFunc(0.55, 0.75, 100, 100,2,2)
                 #                 ])
 
-                ##mar
+                ##MAIN ONE
                 ('distance_line', [TrapezoidalMembFunc(-100., -100., -2.0, -1.6,1,7),
                                    TrapezoidalMembFunc(-2.0, -1.6, -1.4, -0.8,2,7),
                                    TrapezoidalMembFunc(-1.4, -0.8, -0.5, -0.1,3,7),
@@ -162,12 +162,48 @@ class Anfis(nn.Module):
                                 ])
 
 
+                # ##MAX's IMPLEMENTAION
+                # ('distance_line', [TrapezoidalMembFunc(-100., -100., -0.9, -0.65,1,7),
+                #                    TrapezoidalMembFunc(-0.9, -0.65, -0.45, -0.3,2,7),
+                #                    TrapezoidalMembFunc(-0.45, -0.3, -0.15, -0.05,3,7),
+                #                    TrapezoidalMembFunc( -0.15, -0.05, 0.05, 0.15,4,7),
+                #                    TrapezoidalMembFunc(0.05, 0.15, 0.3, 0.45,5,7),
+                #                    TrapezoidalMembFunc(0.3, 0.45, 0.65, 0.9,6,7),
+                #                    TrapezoidalMembFunc( 0.65, 0.9, 100, 100,7,7),
+                #                    Zero()]),
+                #
+                # ('theta_far', [TrapezoidalMembFunc(-np.pi, -np.pi, -0.6, -0.4,1),
+                #                TrapezoidalMembFunc( -0.6, -0.4, -0.1, -0.05,2),
+                #                TrapezoidalMembFunc(-0.1, -0.05, 0.05, 0.1,3),
+                #                TrapezoidalMembFunc( 0.05, 0.1, 0.4, 0.6,4),
+                #                TrapezoidalMembFunc( 0.4, 0.6, np.pi, np.pi,5),
+                #                Zero()]),
+                #
+                # ('theta_near', [TrapezoidalMembFunc(-np.pi, -np.pi, -0.5, -0.25,1),
+                #                 TrapezoidalMembFunc(-0.5, -0.25, -0.06, -0.025,2),
+                #                 TrapezoidalMembFunc(-0.06, -0.025, 0.025, 0.06,3),
+                #                 TrapezoidalMembFunc(0.025, 0.06, 0.25, 0.5,4),
+                #                 TrapezoidalMembFunc(0.25, 0.5, np.pi, np.pi,5),
+                #                 Zero()]),
+                #
+                # ('theta_lookahead', [TrapezoidalMembFunc(-np.pi, -np.pi, -0.6, -0.4,1),
+                #                 TrapezoidalMembFunc( -0.6, -0.4, -0.1, -0.05,2),
+                #                 TrapezoidalMembFunc(-0.1, -0.05, 0.05, 0.1,3),
+                #                 TrapezoidalMembFunc(0.05, 0.1, 0.4, 0.6,4),
+                #                 TrapezoidalMembFunc(0.4, 0.6, np.pi, np.pi,5),
+                #                 Zero()]),
+                #
+                # ('distance_target', [TrapezoidalMembFunc(-100, -100, 0.00, 0.75,1,2),
+                #                 TrapezoidalMembFunc(0.00, 0.75, 100, 100,2,2)
+                #                 ])
+
+
 
 
     #    invardefs = [
     #            ('distance_line', [TrapezoidalMembFunc(-100, -100, -1.391729712486267, -0.80529651927948,1),
     #                               TrapezoidalMembFunc(-1.391729712486267, -0.80529651927948, -0.8044833025932312, -0.1535172462463379,2),
-    #                               TrapezoidalMembFunc(-0.8044833025932312, -0.1535172462463379, 0.1535172462463379, 0.8084833025932312,3),
+    #                               TrapezoidalMembFunc(-0.15, -0.05, 0.05, 0.15,3),
     #                               TrapezoidalMembFunc(0.1535172462463379, 0.8044833025932312, 0.80529651927948, 1.391729712486267,4),
     #                               TrapezoidalMembFunc(0.80529651927948, 1.391729712486267, 100, 100,5),
     #                               Zero()]),
@@ -226,5 +262,7 @@ class Anfis(nn.Module):
         # mamdani_out = JointSymmetricTriangleMembership(0, .9726, .007, .2036)
         # mamdani_out = JointSymmetric9TriangleMembership(0,-0.2287,1.0375,0.4749,0.4709)
         mamdani_out = JointSymmetric9TriangleMembership(0,1,1,1,1)
+        #MAX's IMPLEMENTATION
+        # mamdani_out = JointSymmetric9TriangleMembership(0,0.6,0.8,1.6,1.2)
         anf = anfis.AnfisNet('ANFIS', invardefs, outvars, mamdani_out, input_keywords, number_of_mfs, False)
         return anf
