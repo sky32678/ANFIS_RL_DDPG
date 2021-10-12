@@ -16,7 +16,7 @@ from rl.ddpg import DDPGagent
 from rl.memory import *
 from anfis_codes.model import *
 from utils.utils import reward, angdiff, wraptopi
-from utils.path import test_course, test_course2, test_course3
+from utils.path import long_sin_test_course, test_course, test_course2, test_course3, new_test_course_r_1, new_test_course_r_0_5
 from torch.utils.tensorboard import SummaryWriter
 from plot_functions.plots import plot_mamdani, _plot_mfs, plot_all_mfs
 from plot_functions.tensorboard_plots import tensorboard_plot
@@ -250,14 +250,19 @@ if __name__ == "__main__":
     batch_size = 32
     linear_velocity = 1.5
     # actor_lr = 1e-5*2.5
-    actor_lr = 1e-4
+
+    actor_lr = 1e-4*2.5
     critic_lr = 1e-3
+
+    # actor_lr = 1e-3
+    # critic_lr = 1e-3*5
+
     gamma = 0.99
     tau = 1e-3
     update_rate = 10
 
 
-    test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
+    test_path = new_test_course_r_1()    ####testcoruse MUST start with 0,0 . Check this out
     # for i in range(len(test_path)):
     #     test_path[i][0] = test_path[i][0] / 1.25
     #     test_path[i][1] = test_path[i][1] / 1.25
@@ -364,16 +369,16 @@ if __name__ == "__main__":
 
         torch.save(agent,'models/anfis_ddpg_trained{}.model'.format(i+1))
 
-        test_path = test_course3()
+        test_path = new_test_course_r_1()
         # for i in range(len(test_path)):
         #     test_path[i][0] = test_path[i][0] / 1.25
         #     test_path[i][1] = test_path[i][1] / 1.25
         test_path.append([100,0])
         if is_simulation == False:
             print("Battery Status: ", battery_status, "%")
-        # if mae < 0.04:
+        # if mae < 0.025:
         #     for g in agent.actor_optimizer.param_groups:
-        #         g['lr'] = 1e-5*2.5
+        #         g['lr'] = 1e-5*3
     # torch.save(agent,'anfis_ddpg_trained.model')
     ####plot
     # plt.plot(test_path[:-1,0], test_path[:-1,1])
