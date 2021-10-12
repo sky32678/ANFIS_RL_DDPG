@@ -1,3 +1,5 @@
+import numpy as np
+import copy
 def test_8_shape():
     path = [[0.0, 0.0], [0.7765, -.1022], [1.5000, -0.4019], [2.1213, -0.8787],
             [2.5981, -1.5000], [2.8978, -2.2235], [3.0, -3.0],
@@ -176,8 +178,8 @@ def new_test_course_r_1():
         [7.7071-2.0,   -0.2929],
         [7.9239-2.0,   -0.6173],
         [8.0000-2.0,   -1.0000],
-        [8.0000-2.0,   -2.5000],
-        [0.0000,   -2.5000],
+        [8.0000-2.0,   -3.5000],
+        [0.0000,   -3.5000],
         [0.0000,    0.0000]
         ]
     return path
@@ -210,3 +212,17 @@ def new_test_course_r_0_5():
         [0.0000,   0.0000]
         ]
     return path
+
+def long_sin_test_course():
+    path1 = np.array(test_course())
+    path = np.array(test_course())
+    for i in range(1):
+        path[:,1] = (path[:,1] + 2.8) * -1
+        path[:,0] = (path[:,0] + path[len(path)-1][0])
+        temp = np.append(path1, path, axis=0)
+        path = temp
+    for i in range(3):
+        hold = copy.deepcopy(temp)
+        hold[:,0] = (hold[:,0] + temp[len(temp)-1][0])
+        temp = np.append(temp, hold,axis=0)
+    return temp.tolist()
