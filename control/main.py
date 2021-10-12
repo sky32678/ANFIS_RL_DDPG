@@ -244,7 +244,7 @@ if __name__ == "__main__":
     global is_simulation
     is_simulation = True
 
-    epoch = 200
+    epoch = 100
     vel_gain = 1.0
     path_tranform_enable = True
     batch_size = 32
@@ -356,6 +356,7 @@ if __name__ == "__main__":
         print("MAE", mae)
         if best_mae > mae:
             best_mae = mae
+            torch.save(agent,'models/anfis_best_trained{}.model'.format(i+1))
 
         rmse = np.sqrt(np.mean(np.power(dis_error, 2)))
         print("RMSE", rmse)
