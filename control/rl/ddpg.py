@@ -7,6 +7,7 @@ import copy
 
 from anfis_codes.model import *
 from rl.memory import *
+from rl.prioritized_memory_replay import PrioritizedReplayBuffer
 
 
 def averaging(model,input):
@@ -227,11 +228,12 @@ def mfs_constraint(model):
                 model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b.copy_(torch.tensor(avg,dtype=torch.float))
 
             # model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d.item())
-            # model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].c = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].a.item())
+            # model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf0'].d = torch.tensor(model.layer['fuzzify'].varmfs[model.input_keywords[i]].mfdefs['mf1'].b.item())
 
 
 class DDPGagent:
-    def __init__(self, num_inputs, num_outputs, anf, hidden_size=32, actor_learning_rate=1e-4, critic_learning_rate=1e-3, gamma=0.99, tau=1e-3, max_memory_size=50000):
+    def __init__(self, num_inputs, num_outputs, anf, hidden_size=32, actor_learning_rate=1e-4,
+    critic_learning_rate=1e-3, gamma=0.99, tau=1e-3, max_memory_size=50000, priority=True, grad_clip=1):
         # Params
         self.num_states = num_inputs
         #self.num_actions = env.action_space.shape
@@ -253,10 +255,15 @@ class DDPGagent:
         for target_param, param in zip(self.critic_target.parameters(), self.critic.parameters()):
             target_param.data.copy_(param.data)
 
+        self.grad_clip = grad_clip
         # Training
-        self.memory = Memory(max_memory_size)
-    #    self.critic_criterion  = nn.MSELoss()
-        self.critic_criterion  = torch.nn.MSELoss(reduction='sum')
+        self.priority = priority
+        if priority:
+            self.memory = PrioritizedReplayBuffer(max_memory_size, .5)
+        else:
+            self.memory = Memory(max_memory_size)
+        # self.critic_criterion  = torch.nn.MSELoss(reduction='sum')
+        self.critic_criterion  = torch.nn.MSELoss()
         self.actor_optimizer  = optim.SGD(self.actor.parameters(), lr=actor_learning_rate, momentum=0.99)
     #    self.actor_optimizer  = optim.Adam(self.actor.parameters(), lr=actor_learning_rate)
         self.critic_optimizer = optim.SGD(self.critic.parameters(), lr=critic_learning_rate, momentum=0.99)
@@ -269,7 +276,15 @@ class DDPGagent:
         return action
 
     def update(self, batch_size):
-        states, actions, rewards, next_states, _ = self.memory.sample(batch_size)
+        # states, actions, rewards, next_states, _ = self.memory.sample(batch_size)
+        if self.priority:
+            states, actions, rewards, next_states, _, weights, batch_idxes = self.memory.sample(batch_size, 0.5)
+        else:
+            states, actions, rewards, next_states, _ = self.memory.sample(batch_size, 0)
+            weights, batch_idxes = np.ones_like(rewards), None
+
+        weights = torch.FloatTensor(weights)
+
         states = torch.FloatTensor(states)
         #print(actions)
         actions = torch.FloatTensor(actions)
@@ -282,19 +297,23 @@ class DDPGagent:
         next_actions = self.actor_target.forward(next_states)
         next_Q = self.critic_target.forward(next_states, next_actions.detach())
         Qprime = rewards + self.gamma * next_Q
-        critic_loss = self.critic_criterion(Qvals, Qprime)/5.
+        critic_loss = self.critic_criterion(Qvals, Qprime)/1.
+        # critic_loss = self.critic_criterion(Qvals * weights, Qprime * weights)
 
         # Actor loss
-        policy_loss = -self.critic.forward(states, self.actor.forward(states)).mean()/-10.
+        policy_loss = -self.critic.forward(states, self.actor.forward(states)).mean()/-1.
+        # policy_loss = self.critic.forward(states, self.actor.forward(states)).mean()
         # update networks
         self.actor_optimizer.zero_grad()
         policy_loss.backward()
+        # torch.nn.utils.clip_grad_norm_(self.actor.parameters(), self.grad_clip)
         self.actor_optimizer.step()
 
         mfs_constraint(self.actor)
 
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
+        # torch.nn.utils.clip_grad_norm_(self.critic.parameters(), self.grad_clip)
         self.critic_optimizer.step()
 
         # update target networks
@@ -303,3 +322,8 @@ class DDPGagent:
 
         for target_param, param in zip(self.critic_target.parameters(), self.critic.parameters()):
             target_param.data.copy_(param.data * self.tau + target_param.data * (1.0 - self.tau))
+
+        if self.priority:
+            TD_error = torch.abs(Qprime - Qvals) + 1e-6
+
+            self.memory.update_priorities(batch_idxes, TD_error)
