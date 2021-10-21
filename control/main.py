@@ -244,14 +244,14 @@ if __name__ == "__main__":
     global is_simulation
     is_simulation = True
 
-    epoch = 100
+    epoch = 50
     vel_gain = 1.0
     path_tranform_enable = True
     batch_size = 32
     linear_velocity = 1.5
     # actor_lr = 1e-5*2.5
 
-    actor_lr = 1e-4*2.5
+    actor_lr = 1e-4
     critic_lr = 1e-3
 
     # actor_lr = 1e-3
@@ -260,9 +260,14 @@ if __name__ == "__main__":
     gamma = 0.99
     tau = 1e-3
     update_rate = 10
+    # 1 = seg, 2 = large,
+    test_course_num = 2
+    if test_course_num == 1:
+        cur_test_path = new_test_course_r_1()
+    elif test_course_num == 2:
+        cur_test_path = test_course3()
 
-
-    test_path = new_test_course_r_1()    ####testcoruse MUST start with 0,0 . Check this out
+    test_path = cur_test_path   ####testcoruse MUST start with 0,0 . Check this out
     # for i in range(len(test_path)):
     #     test_path[i][0] = test_path[i][0] / 1.25
     #     test_path[i][1] = test_path[i][1] / 1.25
@@ -370,16 +375,21 @@ if __name__ == "__main__":
 
         torch.save(agent,'models/anfis_ddpg_trained{}.model'.format(i+1))
 
-        test_path = new_test_course_r_1()
+        if test_course_num == 1:
+            cur_test_path = new_test_course_r_1()
+        elif test_course_num == 2:
+            cur_test_path = test_course3()
+
+        test_path = cur_test_path
         # for i in range(len(test_path)):
         #     test_path[i][0] = test_path[i][0] / 1.25
         #     test_path[i][1] = test_path[i][1] / 1.25
         test_path.append([100,0])
         if is_simulation == False:
             print("Battery Status: ", battery_status, "%")
-        # if mae < 0.025:
-        #     for g in agent.actor_optimizer.param_groups:
-        #         g['lr'] = 1e-5*3
+        if mae < 0.05:
+            for g in agent.actor_optimizer.param_groups:
+                g['lr'] = 1e-5
     # torch.save(agent,'anfis_ddpg_trained.model')
     ####plot
     # plt.plot(test_path[:-1,0], test_path[:-1,1])
