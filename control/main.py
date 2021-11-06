@@ -243,7 +243,7 @@ def wait_pose():
 if __name__ == "__main__":
     global is_simulation
     is_simulation = True
-    mae_boundary = 0.05
+    mae_boundary = 0.06
 
     epoch = 50
     vel_gain = 1.0
@@ -370,7 +370,8 @@ if __name__ == "__main__":
         test_path = np.array(test_path)
         robot_path = np.array(inverse_transform_poses(robot_path))
 
-        tensorboard_plot(agent, i, summary, test_path, robot_path, control_law_save, dis_error, mae, rmse, best_mae)
+        dis_error_max = np.max(dis_error)
+        tensorboard_plot(agent, i, summary, test_path, robot_path, control_law_save, dis_error, mae, rmse, best_mae, dis_error_max)
         plot_all_mfs(agent.actor, summary, i)
         plot_mamdani(agent.actor, summary, i)
 
