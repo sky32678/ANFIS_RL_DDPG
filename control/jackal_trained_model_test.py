@@ -348,6 +348,9 @@ if __name__ == "__main__":
         summary.add_scalar("Error/Dist Error MAE", mae, i+1)
         summary.add_scalar("Error/Dist Error RMSE", rmse, i+1)
 
+        dis_error_max = np.max(dis_error)
+        summary.add_scalar("Error/Max Dist Error", dis_error_max, i+1)
+
         fig, ax = plt.subplots()
         ax.plot(test_path[:-1, 0], test_path[:-1, 1])
         ax.plot(robot_path[:, 0], robot_path[:, 1])
@@ -381,8 +384,11 @@ if __name__ == "__main__":
     test_path = test_course3()    ####testcoruse MUST start with 0,0 . Check this out
     test_path.append([100,0])
 
-    agent= torch.load('anfis_trained.model')
-    print("TRAINED MODEL TURN")
+    # agent= torch.load('anfis_trained.model')
+    # print("TRAINED MODEL TURN")
+
+    print("MAX'S TRAINED MODEL TURN")
+    agent= torch.load('anfis_max_trained.model')
     rospy.sleep(10)
 
     for i in range(epoch):
@@ -450,6 +456,8 @@ if __name__ == "__main__":
         summary.add_scalar("Error/Dist Error MAE", mae, i+6)
         summary.add_scalar("Error/Dist Error RMSE", rmse, i+6)
         # summary.add_scalar("Error/Best Error So far", best_mae, i+1)
+        dis_error_max = np.max(dis_error)
+        summary.add_scalar("Error/Max Dist Error", dis_error_max, i+1)
 
         fig, ax = plt.subplots()
         ax.plot(test_path[:-1, 0], test_path[:-1, 1])
